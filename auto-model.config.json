@@ -1,0 +1,31 @@
+{
+  "enabled": true,
+  "tiers": [
+    {
+      "id": "small",
+      "description": "Quick, low-stakes requests that need little reasoning: answering a factual question about the code, explaining a short snippet, renaming or reformatting, a one-line fix, running a command and reporting the result.",
+      "model": "ollama/gemma4:e2b-mlx",
+      "variant": "none"
+    },
+    {
+      "id": "medium",
+      "description": "Typical coding work: implementing a well-specified feature, editing several files, writing tests, routine debugging with a clear error message, continuing a task that is already under way.",
+      "model": "ollama/qwen3.6:35b-mlx",
+      "variant": "none"
+    },
+    {
+      "id": "large",
+      "description": "Hard problems that need careful step-by-step reasoning: diagnosing a subtle or intermittent bug, designing an architecture or algorithm, weighing trade-offs, large refactors, or a previous attempt that has failed.",
+      "model": "ollama/qwen3.6:35b-mlx",
+      "variant": "high"
+    }
+  ],
+  "defaultTier": "medium",
+  "router": "systemone",
+  "systemOne": { "baseURL": "http://localhost:8009", "model": "kev-latest", "timeoutMs": 30000, "pricePerMTok": 0 },
+  "embedding": { "baseURL": "http://localhost:11434", "model": "embeddinggemma", "examples": "data/router-examples.jsonl", "k": 5 },
+  "llm": { "baseURL": "http://localhost:11434", "model": "gemma4:e2b-mlx" },
+  "policy": { "threshold": 0.4, "margin": 0.15 },
+  "state": { "budgetTokens": 8192 },
+  "log": { "path": "~/.local/state/auto-model/decisions.jsonl", "captureState": false }
+}
