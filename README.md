@@ -99,6 +99,37 @@ Work as normal. Each prompt, including the prompts OpenCode gives to sub-agents,
 
 For scripted runs, use `scripts/oc-run.sh` (the same arguments as `opencode run`) rather than `opencode run` directly; see the known issues below.
 
+## Using just the plugin
+
+The plugin is not packaged. To add it to another project, copy three things into that project's `.opencode` directory:
+- `src/core`, the routing, which has no OpenCode dependency;
+- `src/plugin`, the OpenCode adapter;
+- `auto-model.config.json`.
+
+No dependencies are needed beyond Node's standard library.
+
+```bash
+mkdir -p /path/to/project/.opencode/auto-model/src /path/to/project/.opencode/plugins
+```
+
+```bash
+cp -R src/core src/plugin /path/to/project/.opencode/auto-model/src/
+```
+
+```bash
+cp auto-model.config.json /path/to/project/.opencode/auto-model/
+```
+
+```bash
+echo 'export { default } from "../auto-model/src/plugin/index.ts"' > /path/to/project/.opencode/plugins/auto-model.ts
+```
+
+Then make sure of two things:
+- every tier's model and variant in the copied configuration exists in that project's `opencode.json` (see this repository's [`opencode.json`](opencode.json));
+- Kev is running (`scripts/serve-kev.sh`).
+
+The plugin reads `.opencode/auto-model/auto-model.config.json`, or the file named by `AUTO_MODEL_CONFIG`. The `*.test.ts` files can be left out. With `"router": "embedding"`, also copy `data/router-examples.jsonl` to `.opencode/auto-model/data/`.
+
 ## Configuration
 
 `auto-model.config.json`. A different file can be set with `AUTO_MODEL_CONFIG`.
