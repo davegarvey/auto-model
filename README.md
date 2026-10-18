@@ -10,6 +10,7 @@ The write-up, [`WRITEUP.md`](WRITEUP.md), summarises what the experiment found. 
 - Locally, Kev chose the labelled tier for 30 of 39 clear-cut cases, and a small general model did about as well.
 - In a follow-up, TypeSafe's hosted Jev chose it for 37 of 39.
 - The embedding baseline did poorly at first, because it compared whole conversations with short example prompts. Embedding only the latest message, it matched Kev at 30 of 39.
+- On a final round of long prompts and terse follow-ups, Jev got 15 of 15, Gemma 12, Kev 9 and the embedding routers 8 and 7.
 - Switching between tiers costs anything from 40 ms to over a minute, depending on the models.
 
 The raw results are in [`results/`](results/):
@@ -20,6 +21,7 @@ The raw results are in [`results/`](results/):
 | `2026-10-18-615db61` | Routing evaluation at the tuned threshold of 0.1 |
 | `2026-10-18-jev-51a31cf` | Follow-up: hosted Jev, three runs over the same cases |
 | `2026-10-18-embedding-latest-ac57158` | Follow-up: embedding baseline on the latest message only |
+| `2026-10-18-long-58eb060` | Final round: long prompts and terse follow-ups, all routers |
 | `2026-10-18-switch-cost` | Switching cost benchmark |
 | `2026-10-18-live` | Decision log of a live OpenCode session |
 

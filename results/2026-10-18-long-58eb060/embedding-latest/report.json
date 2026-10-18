@@ -1,0 +1,560 @@
+{
+  "meta": {
+    "date": "2026-10-18T18:40:09.446Z",
+    "commit": "58eb060",
+    "datasetRevision": "ad716c3",
+    "dataset": {
+      "prompts": 8,
+      "sessions": 1,
+      "turns": 7
+    },
+    "config": {
+      "enabled": true,
+      "tiers": [
+        {
+          "id": "small",
+          "description": "Quick, low-stakes requests that need little reasoning: answering a factual question about the code, explaining a short snippet, renaming or reformatting, a one-line fix, running a command and reporting the result.",
+          "model": "ollama/gemma4:e2b-mlx",
+          "variant": "none"
+        },
+        {
+          "id": "medium",
+          "description": "Typical coding work: implementing a well-specified feature, editing several files, writing tests, routine debugging with a clear error message, continuing a task that is already under way.",
+          "model": "ollama/qwen3.6:35b-mlx",
+          "variant": "none"
+        },
+        {
+          "id": "large",
+          "description": "Hard problems that need careful step-by-step reasoning: diagnosing a subtle or intermittent bug, designing an architecture or algorithm, weighing trade-offs, large refactors, or a previous attempt that has failed.",
+          "model": "ollama/qwen3.6:35b-mlx",
+          "variant": "high"
+        }
+      ],
+      "defaultTier": "medium",
+      "router": "systemone",
+      "systemOne": {
+        "baseURL": "http://localhost:8009",
+        "model": "kev-latest",
+        "timeoutMs": 30000,
+        "pricePerMTok": 0
+      },
+      "jev": {
+        "baseURL": "https://api.defapi.org",
+        "path": "/api/v1/decisions",
+        "model": "typesafe/jev-1.13",
+        "apiKeyEnv": "DEFAPI_API_KEY",
+        "timeoutMs": 30000,
+        "pricePerMTok": 0.084
+      },
+      "embedding": {
+        "baseURL": "http://localhost:11434",
+        "model": "embeddinggemma",
+        "examples": "data/router-examples.jsonl",
+        "k": 5,
+        "timeoutMs": 30000,
+        "input": "latest"
+      },
+      "llm": {
+        "baseURL": "http://localhost:11434",
+        "model": "gemma4:e2b-mlx",
+        "timeoutMs": 30000
+      },
+      "policy": {
+        "threshold": 0.1,
+        "margin": 0.15
+      },
+      "state": {
+        "budgetTokens": 8192
+      },
+      "log": {
+        "path": "~/.local/state/auto-model/decisions.jsonl",
+        "captureState": false
+      }
+    },
+    "versions": {
+      "node": "24.21.0",
+      "opencode": "opencode v2.0.30",
+      "ollama": "0.32.14",
+      "models": {
+        "embeddinggemma:latest": "85462619ee72",
+        "gemma4:e2b-mlx": "e98b54fe1913",
+        "qwen3.6:35b-mlx": "1b50c6fdc2d4"
+      },
+      "systemOne": {
+        "name": "kev-latest",
+        "description": "Kev pointer head on Qwen/Qwen3.5-4B-Base, serving jaredpalmer/kev-4b@v1.0 at temperature 2.41",
+        "release_date": "2026-10-01",
+        "run": "jaredpalmer/kev-4b@v1.0",
+        "base": "Qwen/Qwen3.5-4B-Base",
+        "lora": 16,
+        "device": "mps",
+        "backend": "mlx",
+        "dtype": "bfloat16",
+        "temperature": 2.406050072164233,
+        "max_state_tokens": 65536,
+        "truncate_states": false,
+        "cuda_graphs": null,
+        "prefix_cache": {
+          "size": 4,
+          "min_state_tokens": 0,
+          "max_tokens": 65536,
+          "hits": 0,
+          "misses": 51,
+          "cached_states": 4,
+          "oom_retries": 0
+        },
+        "batches": {
+          "count": 51,
+          "requests": 51,
+          "queued": 0
+        }
+      }
+    }
+  },
+  "summaries": [
+    {
+      "router": "embedding-latest",
+      "model": "embeddinggemma",
+      "overall": {
+        "agree": 8,
+        "n": 15,
+        "rate": 0.5333333333333333,
+        "ci": {
+          "low": 0.3011663015105079,
+          "high": 0.7519077474025355
+        }
+      },
+      "prompts": {
+        "agree": 4,
+        "n": 8,
+        "rate": 0.5,
+        "ci": {
+          "low": 0.21521252682444186,
+          "high": 0.7847874731755582
+        }
+      },
+      "turns": {
+        "agree": 4,
+        "n": 7,
+        "rate": 0.5714285714285714,
+        "ci": {
+          "low": 0.2504542304090258,
+          "high": 0.8417830777373732
+        }
+      },
+      "applied": {
+        "agree": 8,
+        "n": 15,
+        "rate": 0.5333333333333333,
+        "ci": {
+          "low": 0.3011663015105079,
+          "high": 0.7519077474025355
+        }
+      },
+      "confusion": {
+        "small": {
+          "small": 1,
+          "medium": 2,
+          "large": 2,
+          "error": 0
+        },
+        "medium": {
+          "small": 0,
+          "medium": 2,
+          "large": 3,
+          "error": 0
+        },
+        "large": {
+          "small": 0,
+          "medium": 0,
+          "large": 5,
+          "error": 0
+        }
+      },
+      "latency": {
+        "median": 152,
+        "p95": 159
+      },
+      "tokens": {
+        "input": 16519,
+        "output": 0
+      },
+      "costUSD": 0,
+      "errors": 0,
+      "thresholdSweep": [
+        {
+          "threshold": 0,
+          "agreement": {
+            "agree": 8,
+            "n": 15,
+            "rate": 0.5333333333333333,
+            "ci": {
+              "low": 0.3011663015105079,
+              "high": 0.7519077474025355
+            }
+          },
+          "fallbackRate": 0
+        },
+        {
+          "threshold": 0.1,
+          "agreement": {
+            "agree": 8,
+            "n": 15,
+            "rate": 0.5333333333333333,
+            "ci": {
+              "low": 0.3011663015105079,
+              "high": 0.7519077474025355
+            }
+          },
+          "fallbackRate": 0
+        },
+        {
+          "threshold": 0.2,
+          "agreement": {
+            "agree": 8,
+            "n": 15,
+            "rate": 0.5333333333333333,
+            "ci": {
+              "low": 0.3011663015105079,
+              "high": 0.7519077474025355
+            }
+          },
+          "fallbackRate": 0.13333333333333333
+        },
+        {
+          "threshold": 0.3,
+          "agreement": {
+            "agree": 8,
+            "n": 15,
+            "rate": 0.5333333333333333,
+            "ci": {
+              "low": 0.3011663015105079,
+              "high": 0.7519077474025355
+            }
+          },
+          "fallbackRate": 0.13333333333333333
+        },
+        {
+          "threshold": 0.4,
+          "agreement": {
+            "agree": 9,
+            "n": 15,
+            "rate": 0.6,
+            "ci": {
+              "low": 0.357464427565077,
+              "high": 0.8017577191740534
+            }
+          },
+          "fallbackRate": 0.2
+        },
+        {
+          "threshold": 0.5,
+          "agreement": {
+            "agree": 9,
+            "n": 15,
+            "rate": 0.6,
+            "ci": {
+              "low": 0.357464427565077,
+              "high": 0.8017577191740534
+            }
+          },
+          "fallbackRate": 0.3333333333333333
+        },
+        {
+          "threshold": 0.6,
+          "agreement": {
+            "agree": 9,
+            "n": 15,
+            "rate": 0.6,
+            "ci": {
+              "low": 0.357464427565077,
+              "high": 0.8017577191740534
+            }
+          },
+          "fallbackRate": 0.3333333333333333
+        },
+        {
+          "threshold": 0.7,
+          "agreement": {
+            "agree": 9,
+            "n": 15,
+            "rate": 0.6,
+            "ci": {
+              "low": 0.357464427565077,
+              "high": 0.8017577191740534
+            }
+          },
+          "fallbackRate": 0.6
+        },
+        {
+          "threshold": 0.8,
+          "agreement": {
+            "agree": 5,
+            "n": 15,
+            "rate": 0.3333333333333333,
+            "ci": {
+              "low": 0.15176100694691236,
+              "high": 0.5828687484878701
+            }
+          },
+          "fallbackRate": 1
+        },
+        {
+          "threshold": 0.9,
+          "agreement": {
+            "agree": 5,
+            "n": 15,
+            "rate": 0.3333333333333333,
+            "ci": {
+              "low": 0.15176100694691236,
+              "high": 0.5828687484878701
+            }
+          },
+          "fallbackRate": 1
+        }
+      ],
+      "sessions": [
+        {
+          "session": "terse-follow-ups",
+          "turns": 7,
+          "withHysteresis": {
+            "agreement": {
+              "agree": 4,
+              "n": 7,
+              "rate": 0.5714285714285714,
+              "ci": {
+                "low": 0.2504542304090258,
+                "high": 0.8417830777373732
+              }
+            },
+            "switches": 1
+          },
+          "withoutHysteresis": {
+            "agreement": {
+              "agree": 4,
+              "n": 7,
+              "rate": 0.5714285714285714,
+              "ci": {
+                "low": 0.2504542304090258,
+                "high": 0.8417830777373732
+              }
+            },
+            "switches": 3
+          }
+        }
+      ]
+    }
+  ],
+  "cases": [
+    {
+      "router": "embedding-latest",
+      "kind": "prompt",
+      "caseID": "lp1",
+      "label": "small",
+      "proposed": "large",
+      "applied": "large",
+      "confidence": 0.7100195851373243,
+      "reason": "decision",
+      "latencyMs": 152,
+      "inputTokens": 2048,
+      "outputTokens": 0,
+      "costUSD": 0
+    },
+    {
+      "router": "embedding-latest",
+      "kind": "prompt",
+      "caseID": "lp2",
+      "label": "small",
+      "proposed": "small",
+      "applied": "small",
+      "confidence": 0.7037661930192969,
+      "reason": "decision",
+      "latencyMs": 159,
+      "inputTokens": 2048,
+      "outputTokens": 0,
+      "costUSD": 0
+    },
+    {
+      "router": "embedding-latest",
+      "kind": "prompt",
+      "caseID": "lp3",
+      "label": "small",
+      "proposed": "medium",
+      "applied": "medium",
+      "confidence": 0.40381572220479744,
+      "reason": "decision",
+      "latencyMs": 156,
+      "inputTokens": 2048,
+      "outputTokens": 0,
+      "costUSD": 0
+    },
+    {
+      "router": "embedding-latest",
+      "kind": "prompt",
+      "caseID": "lp4",
+      "label": "medium",
+      "proposed": "large",
+      "applied": "large",
+      "confidence": 0.6969178238046887,
+      "reason": "decision",
+      "latencyMs": 156,
+      "inputTokens": 2048,
+      "outputTokens": 0,
+      "costUSD": 0
+    },
+    {
+      "router": "embedding-latest",
+      "kind": "prompt",
+      "caseID": "lp5",
+      "label": "medium",
+      "proposed": "medium",
+      "applied": "medium",
+      "confidence": 0.4099063026993273,
+      "reason": "decision",
+      "latencyMs": 155,
+      "inputTokens": 2048,
+      "outputTokens": 0,
+      "costUSD": 0
+    },
+    {
+      "router": "embedding-latest",
+      "kind": "prompt",
+      "caseID": "lp6",
+      "label": "medium",
+      "proposed": "large",
+      "applied": "large",
+      "confidence": 0.39009745422593634,
+      "reason": "decision",
+      "latencyMs": 155,
+      "inputTokens": 2048,
+      "outputTokens": 0,
+      "costUSD": 0
+    },
+    {
+      "router": "embedding-latest",
+      "kind": "prompt",
+      "caseID": "lp7",
+      "label": "large",
+      "proposed": "large",
+      "applied": "large",
+      "confidence": 0.7042362943119141,
+      "reason": "decision",
+      "latencyMs": 159,
+      "inputTokens": 2048,
+      "outputTokens": 0,
+      "costUSD": 0
+    },
+    {
+      "router": "embedding-latest",
+      "kind": "prompt",
+      "caseID": "lp8",
+      "label": "large",
+      "proposed": "large",
+      "applied": "large",
+      "confidence": 0.6980585127418261,
+      "reason": "decision",
+      "latencyMs": 157,
+      "inputTokens": 2048,
+      "outputTokens": 0,
+      "costUSD": 0
+    },
+    {
+      "router": "embedding-latest",
+      "kind": "turn",
+      "caseID": "terse-follow-ups#1",
+      "label": "small",
+      "proposed": "medium",
+      "applied": "medium",
+      "confidence": 0.11291675254470425,
+      "reason": "decision",
+      "latencyMs": 75,
+      "inputTokens": 21,
+      "outputTokens": 0,
+      "costUSD": 0
+    },
+    {
+      "router": "embedding-latest",
+      "kind": "turn",
+      "caseID": "terse-follow-ups#2",
+      "label": "small",
+      "proposed": "large",
+      "applied": "medium",
+      "confidence": 0.11660294286837904,
+      "reason": "hysteresis-hold",
+      "latencyMs": 74,
+      "inputTokens": 11,
+      "outputTokens": 0,
+      "costUSD": 0
+    },
+    {
+      "router": "embedding-latest",
+      "kind": "turn",
+      "caseID": "terse-follow-ups#3",
+      "label": "medium",
+      "proposed": "medium",
+      "applied": "medium",
+      "confidence": 0.7159879772425084,
+      "reason": "decision",
+      "latencyMs": 75,
+      "inputTokens": 28,
+      "outputTokens": 0,
+      "costUSD": 0
+    },
+    {
+      "router": "embedding-latest",
+      "kind": "turn",
+      "caseID": "terse-follow-ups#4",
+      "label": "medium",
+      "proposed": "large",
+      "applied": "large",
+      "confidence": 0.6928886752904031,
+      "reason": "decision",
+      "latencyMs": 75,
+      "inputTokens": 14,
+      "outputTokens": 0,
+      "costUSD": 0
+    },
+    {
+      "router": "embedding-latest",
+      "kind": "turn",
+      "caseID": "terse-follow-ups#5",
+      "label": "large",
+      "proposed": "large",
+      "applied": "large",
+      "confidence": 0.7429016799128741,
+      "reason": "decision",
+      "latencyMs": 75,
+      "inputTokens": 38,
+      "outputTokens": 0,
+      "costUSD": 0
+    },
+    {
+      "router": "embedding-latest",
+      "kind": "turn",
+      "caseID": "terse-follow-ups#6",
+      "label": "large",
+      "proposed": "large",
+      "applied": "large",
+      "confidence": 0.6993882711568654,
+      "reason": "decision",
+      "latencyMs": 75,
+      "inputTokens": 11,
+      "outputTokens": 0,
+      "costUSD": 0
+    },
+    {
+      "router": "embedding-latest",
+      "kind": "turn",
+      "caseID": "terse-follow-ups#7",
+      "label": "large",
+      "proposed": "large",
+      "applied": "large",
+      "confidence": 0.7130748784530357,
+      "reason": "decision",
+      "latencyMs": 74,
+      "inputTokens": 12,
+      "outputTokens": 0,
+      "costUSD": 0
+    }
+  ]
+}

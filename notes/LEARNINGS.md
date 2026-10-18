@@ -137,6 +137,29 @@ The original baseline embedded the whole routing state, a long structured block 
 Five session turns refer back to earlier work that sets their difficulty (turns 4, 6, 10, 11 and 16). The latest-message embedding, which sees none of the history, got 4 of them right, the same as Jev; Kev got 5 and Gemma 2. The follow-ups give themselves away: "Step back and reason…" nearly repeats a `large` example, and "Fix the failing test" resembles a `medium` one. The session was scripted to keep every label clear-cut (entry 21), so it contains no terse follow-up like "now fix it" or "try again" whose wording carries no sign of the task's difficulty.
 - **Why it matters:** the blog's argument that an embedding of one request cannot follow a conversation is plausible but untested here. Five turns give intervals of 38–96%. Testing it needs real sessions with uninformative follow-ups, which are exactly the cases hard to label without judgement calls.
 
+### 38. On long prompts and terse follow-ups, the embeddings failed as predicted, and so did Kev (2026-10-18)
+The final round had 15 new cases, labelled and committed before any run: 8 long prompts and a 7-turn session with 4 terse follow-ups. Results:
+
+| Router | Correct |
+|---|---|
+| Jev | 15/15 |
+| Gemma | 12/15 |
+| Kev | 9/15 (both runs identical) |
+| Latest-message embedding | 8/15 |
+| Full-state embedding | 7/15 |
+
+On paired tests both embedding variants were clearly worse than Jev (p = 0.016 and 0.008), and worse than Gemma in direction but not significantly. They were no worse than Kev (4 cases against 5).
+- **Evidence:** `results/2026-10-18-long-58eb060/README.md`.
+- **Why it matters:** the prediction held against Jev, and only partly against the local models. The cases that separate routers are exactly those the original 39 lacked. On them, the gap between a strong decision model and the local options widens: 15 against 9 to 12, compared with 37 against about 30 on the clear short cases.
+
+### 39. An embedding router cannot see a request it truncates, or tell terse follow-ups apart (2026-10-18)
+EmbeddingGemma's 2,048-token window truncated all eight long prompts. In the four with the request at the end, the material alone filled the window, so the request never reached the embedding. The latest-message variant got 1 of those 4 right, and that one was a design document, which reads as `large` regardless. It got 3 of 4 where the request came first. It proposed `large` for all four terse follow-ups, which were labelled small, medium, large and large.
+- **Why it matters:** this is the structural weakness entry 16 anticipated, now observed. An embedding router depends on where the user puts the question, and has no way to read "now fix it". Its score on follow-ups is whatever its bias happens to match.
+
+### 40. Kev anchors on the current tier it is told, which turns hysteresis into a trap (2026-10-18)
+At turn 5 of the terse session, Kev proposed `large`, but the 0.15 hysteresis margin held `medium`. At turns 6 and 7 ("still missing some" and "try the other approach", both labelled `large` because the previous attempt failed), Kev's state said the current tier was `medium`, and it proposed `medium` both times. In the state-size sweep, which supplies the previous turn's label as the current tier, Kev got all seven turns right. Kev also sent both long `large` prompts to `medium`, at low confidence.
+- **Why it matters:** the selector's own earlier decision is part of the router's input. With hysteresis, a held decision can lock a session onto the wrong tier, and this happened just after a failed attempt, where escalating matters most. This adds to entry 26's case against hysteresis. The live default margin is now 0, but that configuration was not rerun on these cases.
+
 ## Tiers, reasoning levels and switching cost
 
 ### 4. "Reasoning effort" is often just on or off (2026-10-18)

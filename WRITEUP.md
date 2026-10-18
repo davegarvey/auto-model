@@ -119,13 +119,42 @@ Agreement on those five turns:
 
 So the latest-message embedding did not fail on them. Each of these follow-ups says in its own words roughly how hard it is: "step back and reason" nearly repeats one of the `large` examples. The session was written so every turn sits clearly in one tier, and so it contains no follow-up whose wording gives nothing away.
 
-With five turns the intervals span 38–96%. This evidence neither supports nor refutes the argument. Testing it needs real sessions with terse follow-ups.
+With five turns the intervals span 38–96%. On its own, this evidence neither supports nor refutes the argument. The final round below tests it directly.
+
+## Final round: long prompts and terse follow-ups
+
+Every original case was effectively one short message, so a last round tested the two places where embedding routers were expected to struggle. The prediction, stated before running, was that on these cases the embedding routers would do clearly worse than Jev, and probably worse than Kev and Gemma ([`results/2026-10-18-long-58eb060`](results/2026-10-18-long-58eb060/README.md)).
+
+The 15 new cases were written and labelled, and the labels committed, before any router ran:
+- **Eight long prompts** of about 2,000 to 3,300 tokens: a service log, the licence, source files, the README and the design document. Each comes with a request whose difficulty does not follow from the material, such as "what time was the first error?" or "find the flaw in this design". The request is at the start of four prompts and at the end of the other four.
+- **A seven-turn session** with four terse follow-ups: "now fix it", "do the same for the rest", "still missing some" and "try the other approach". Their right tiers (small, medium, large and large) come only from the earlier turns.
+
+| Router (new cases only) | Long prompts | Session | Terse follow-ups | All 15 |
+|---|---|---|---|---|
+| Jev | 8/8 | 7/7 | 4/4 | 15/15 (100%, 80–100%) |
+| Gemma 4 E2B | 5/8 | 7/7 | 4/4 | 12/15 (80%, 55–93%) |
+| Kev (two identical runs) | 4/8 | 5/7 | 2/4 | 9/15 (60%, 36–80%) |
+| Embedding, latest message | 4/8 | 4/7 | 2/4 | 8/15 (53%, 30–75%) |
+| Embedding, full state | 4/8 | 3/7 | 1/4 | 7/15 (47%, 25–70%) |
+
+**The embeddings failed in the predicted way.**
+- **Long prompts.** EmbeddingGemma reads 2,048 tokens and truncated every long prompt. Where the request came at the end, the embedding never contained it, and the latest-message variant got 1 of those 4 right. The one it got right was the design document, which reads as `large` whatever is asked. Where the request came first, it got 3 of 4.
+- **Terse follow-ups.** It proposed `large` for all four. Its 2 of 4 is exactly what always answering `large` would score.
+- **Against Jev,** in paired tests on the same cases, both variants were clearly worse (p = 0.016 and 0.008).
+
+**The prediction held only partly against the local models.**
+- **Gemma.** The embeddings did worse than Gemma (8 and 7 of 15 against 12), but on 15 cases the difference is not significant.
+- **Kev.** The embeddings did no worse than Kev. Kev also dropped, to 9 of 15. It sent both long `large` prompts to `medium`, at low confidence. It also missed the two follow-ups after a failed fix, and this looks like an interaction with hysteresis. At turn 5, Kev proposed `large`, but the 0.15 margin kept `medium`. Told at turns 6 and 7 that the current tier was `medium`, Kev proposed `medium`. Given the previous turn's label instead, in the state-size sweep, it got all seven session turns right. So Kev seems to anchor on the current tier it is given.
+
+**Gemma followed the conversation but misjudged some long prompts.** It got all four terse follow-ups right, but sent two long medium prompts to `small` and one long large prompt to `medium`, each at a reported confidence of 0.95.
+
+**Jev got every case right.** The run cost $0.003.
 
 ## Kev's context limit, and what was not tested
 
 Kev must read its whole input on every turn, and its server reuses work only for byte-identical inputs. On this laptop, that costs about 0.8 ms per token of session state: roughly 1.6 s at 2k tokens and 6.5 s at the 8k cap, against Kev's own figures of tens of milliseconds on datacentre GPUs ([`notes/spike-kev.md`](notes/spike-kev.md)). Local System One routing is fast for short states and noticeably slow for long ones.
 
-The evaluation did not reach that regime. The scripted session's states were about 490 tokens, so the sweep over 2k–16k budgets gave identical results at every size. Whether more history helps routing, and how a router behaves near Kev's 8k validated context, remain open. One live observation points both ways: after a hard deadlock discussion, Kev proposed `large` even for "Reply with just: one". Context makes "now fix it" inherit a task's difficulty, but a trivial aside inherits it too.
+The original evaluation did not reach that regime. The scripted session's states were about 490 tokens, so the sweep over 2k–16k budgets gave identical results at every size. The final round's long prompts reached about 6,400 of Kev's tokens. There, routing took about 0.8 s per decision, and Kev's accuracy fell, but long histories as such remain untested. Whether more history helps routing, and how a router behaves near Kev's 8k validated context, remain open. One live observation points both ways: after a hard deadlock discussion, Kev proposed `large` even for "Reply with just: one". Context makes "now fix it" inherit a task's difficulty, but a trivial aside inherits it too.
 
 Memory is the other limit. Kev, Gemma and Qwen together took about 37 GB in steady use, peaking near 45 GB while Kev loads. That fits a well-specified laptop, with little room for more models on the menu.
 
@@ -134,16 +163,16 @@ Memory is the other limit. Kev, Gemma and Qwen together took about 37 GB in stea
 Partly.
 
 - **Mechanically, yes.** An agent can choose its own model per turn, including the reasoning level, with about a thousand lines of plugin and routing code and well under a second of routing time on short states. A simple question went to a 2B model and a hard one to a thinking model, without the user doing anything.
-- **On accuracy, it depends on the decision model.** The local options agreed with clear-cut labels about three times in four, and none beat the others. That holds for Kev, a 4B open copy, a general 2B model, and an embedding lookup over 30 examples, once the lookup compared like with like. Hosted Jev agreed 37 times in 39, clearly better than the general model and probably better than Kev. The sample is 39 clear cases, so even Jev's figure has an interval of 83–99%. With Kev, the most consequential setting was the fallback threshold. It had to be tuned from data, or it quietly turned automatic selection into "always medium".
+- **On accuracy, it depends on the decision model.** The local options agreed with clear-cut labels about three times in four, and none beat the others. That holds for Kev, a 4B open copy, a general 2B model, and an embedding lookup over 30 examples, once the lookup compared like with like. Hosted Jev agreed 37 times in 39, clearly better than the general model and probably better than Kev. The sample is 39 clear cases, so even Jev's figure has an interval of 83–99%. On the harder final round of long prompts and terse follow-ups, Jev got all 15 right. Gemma got 12 and Kev 9. The embedding routers got 8 and 7, failing exactly where expected: requests they could not see, and follow-ups they could not tell apart. With Kev, the most consequential setting was the fallback threshold. It had to be tuned from data, or it quietly turned automatic selection into "always medium".
 - **Economically, it depends on the menu.** Where the tiers share weights and the reasoning toggle sits at the end of the prompt, as with Qwen here, switching is nearly free and routing pays off. Where tiers are different models, each switch re-reads the whole context. That favours staying put and penalises a router that flips often.
 
-A fair conclusion for this proof of concept: automatic selection is practical now. A strong decision model makes it accurate on clear requests, for a fraction of a cent and a few hundred milliseconds per turn. The trade-off is that the session text leaves the machine. A small local model is free and private, but makes noticeably more mistakes.
+A fair conclusion for this proof of concept: automatic selection is practical now. A strong decision model makes it accurate on clear requests, for a fraction of a cent and a few hundred milliseconds per turn. The trade-off is that the session text leaves the machine. A small local model is free and private, but makes noticeably more mistakes, and an embedding lookup works only while each request carries its own difficulty.
 
 The remaining obstacles are the host agent's support, the price of switching, and the absence of good labels for the ambiguous middle. Those are engineering and evaluation problems rather than research ones, which is itself an argument that manual selection will not last.
 
 ## Limits of this evidence
 
-- **Sample size.** 21 prompts and one 18-turn scripted session. The prompts and labels were drafted by the experiment agent to be unambiguous, with borderline drafts discarded.
+- **Sample size.** 21 prompts and one 18-turn scripted session, plus a final round of 8 long prompts and a 7-turn session. All of it was drafted and labelled by the experiment agent to be unambiguous, with borderline drafts discarded. The final round's labels were committed before any router ran.
 - **Short states.** No long real sessions, so long context is untested.
 - **Specific choices.** One laptop, one agent version, two System One models and an illustrative three-tier menu.
 - **A reseller in the path.** Jev was reached through a third party. It could not be confirmed that requests reach TypeSafe unchanged, and the latency figures include the reseller.
