@@ -1,0 +1,6 @@
+{"t":"2026-10-18T10:03:09.801Z","event":"setup"}
+{"t":"2026-10-18T10:08:25.318Z","event":"setup"}
+{"t":"2026-10-18T10:08:25.465Z","event":"prompt","sessionID":"ses_eb1841b20ffemuE9mhNbqy5abC"}
+{"t":"2026-10-18T10:08:25.470Z","event":"switched","sessionID":"ses_eb1841b20ffemuE9mhNbqy5abC"}
+{"t":"2026-10-18T10:08:25.507Z","event":"model.request","kind":"primary","model":{"id":"gemma4:e2b-mlx","providerID":"ollama","variant":"none"}}
+{"t":"2026-10-18T10:08:25.514Z","event":"model.request","kind":"title","model":{"id":"gpt-5.6-luna","providerID":"openai","variant":"none"}}

@@ -90,6 +90,8 @@ Content that changes from turn to turn sits at the end, which keeps the prefix s
 Token budgeting uses a conservative estimate of characters ÷ 3.5. The token count Kev reports in `usage.input_tokens` is logged, so the estimate's error is measurable.
 
 - **Alternative considered:** loading Qwen's tokeniser in TypeScript. That adds a dependency for little accuracy gain at an 8k budget.
+- **Finding from spike 1.3:** Kev's server reuses work only for an identical state. Its cache is keyed on the full state token sequence, not on prefixes, so the prefix-stable layout buys nothing with Kev. It is kept because it costs nothing and would help a server that reuses prefixes.
+- **Cost per turn:** Kev re-reads the whole state every turn, at about 0.8 ms per token on the M5 Pro, which is about 6.5 s at the 8k budget. The routing timeout therefore defaults to 30 s. This is an experiment, so a slow decision should be measured, not cut off. Latency is reported per state size by the evaluation's sweep.
 
 ### 6. Policy: fallback first, then hysteresis
 The question is a single `choice`, with the tier descriptions as criteria. The policy then applies, in order:

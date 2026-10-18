@@ -88,5 +88,5 @@ When the System One endpoint errors, times out or returns an invalid response, t
 - **THEN** the request proceeds on the current or default tier, and the failure is recorded
 
 #### Scenario: Endpoint slow
-- **WHEN** the endpoint does not answer within the configured timeout, which defaults to 5 seconds
+- **WHEN** the endpoint does not answer within the configured timeout, which defaults to 30 seconds
 - **THEN** the selector abandons the call and proceeds as for an unavailable endpoint
