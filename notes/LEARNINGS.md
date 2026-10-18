@@ -99,6 +99,17 @@ In the live session, `opencode run` stalled twice before reporting a session. Th
 - **Evidence:** `results/2026-10-18-live/`.
 - **Why it matters:** this follows on from entry 12. Working around a flaky host changes what the selector sees, and the decision log is how you notice.
 
+### 31. Kev's low confidence still ranks its answers well (2026-10-18)
+Grouped by reported confidence, Kev's proposals in the final run were right as follows:
+- below 0.2: 8 of 16;
+- 0.2 to 0.3: 7 of 8;
+- 0.3 to 0.4: 5 of 5;
+- 0.4 and above: 10 of 10.
+
+Above about 0.2, it was right in 22 of 23 cases. Falling back to `medium` below 0.2 does not help, though, because the default is no more often right for those cases. In the 0.4 run's sweep, a threshold of 0.2 scored 27/39 against 29/39 with none.
+- **Evidence:** `results/2026-10-18-cb379e3/decisions.jsonl`, rows with `meta.run` of `main` and router `systemone`.
+- **Why it matters:** the scale is unusual, but the signal is real. A confidence score can tell you when to doubt the router without telling you what to do instead. A fallback to a fixed tier is a guard against a broken router, not a way to improve accuracy. A more useful use of low confidence might be to escalate to the larger tier, or to ask the user.
+
 ## Tiers, reasoning levels and switching cost
 
 ### 4. "Reasoning effort" is often just on or off (2026-10-18)
