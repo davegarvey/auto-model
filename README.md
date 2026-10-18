@@ -16,8 +16,8 @@ The raw results are in [`results/`](results/):
 
 | Directory | Contents |
 |---|---|
-| `2026-10-18-a91a874` | Routing evaluation at the original threshold of 0.4 |
-| `2026-10-18-cb379e3` | Routing evaluation at the tuned threshold of 0.1 |
+| `2026-10-18-ad716c3` | Routing evaluation at the original threshold of 0.4 |
+| `2026-10-18-615db61` | Routing evaluation at the tuned threshold of 0.1 |
 | `2026-10-18-switch-cost` | Switching cost benchmark |
 | `2026-10-18-live` | Decision log of a live OpenCode session |
 

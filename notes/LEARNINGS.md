@@ -66,7 +66,7 @@ The 21 single prompts in `data/eval/prompts.jsonl` (7 per tier) were drafted by 
 
 ### 22. A fallback threshold set in advance silently disabled the router (2026-10-18)
 At the planned threshold of 0.4, 72% of Kev's decisions fell back to the default tier. On the 18-turn session, every turn but one ran on `medium` and the tier never changed. Kev proposed the labelled tier 74% of the time, but only 56% of applied tiers matched. Its median confidence was 0.25. At a threshold of 0.1, applied agreement rose to 69%.
-- **Evidence:** `results/2026-10-18-a91a874/report.md` (threshold 0.4) and `results/2026-10-18-cb379e3/report.md` (threshold 0.1).
+- **Evidence:** `results/2026-10-18-ad716c3/report.md` (threshold 0.4) and `results/2026-10-18-615db61/report.md` (threshold 0.1).
 - **Why it matters:** this is entry 9's warning realised. A safety net tuned without data turned automatic selection into "always medium", and nothing failed visibly. Only the decision log's reason codes showed it.
 
 ### 23. A small general model routed as well as the specialised one (2026-10-18)
@@ -75,7 +75,7 @@ Gemma 4 E2B, asked for a JSON answer, proposed the labelled tier 74% of the time
 
 ### 24. Where the routers go wrong matters more than how often (2026-10-18)
 Almost all of Kev's errors fell on the border between `small` and `medium`: in the final run, 4 of 16 small cases went to medium and 4 of 13 medium cases went to small. It recognised 9 of 10 `large` cases. Gemma sent 5 of 13 `medium` cases to `small` in both runs, and sent one `large` case to `small`.
-- **Evidence:** the confusion matrices in `results/2026-10-18-cb379e3/report.md`.
+- **Evidence:** the confusion matrices in `results/2026-10-18-615db61/report.md`.
 - **Why it matters:** the errors have different prices. Over-routing wastes compute, while under-routing hands real coding work to the weakest model. Agreement alone hides this; the confusion matrix is the more useful view for choosing a router.
 
 ### 25. The embedding baseline is weak, and biased towards the expensive tier (2026-10-18)
@@ -107,7 +107,7 @@ Grouped by reported confidence, Kev's proposals in the final run were right as f
 - 0.4 and above: 10 of 10.
 
 Above about 0.2, it was right in 22 of 23 cases. Falling back to `medium` below 0.2 does not help, though, because the default is no more often right for those cases. In the 0.4 run's sweep, a threshold of 0.2 scored 27/39 against 29/39 with none.
-- **Evidence:** `results/2026-10-18-cb379e3/decisions.jsonl`, rows with `meta.run` of `main` and router `systemone`.
+- **Evidence:** `results/2026-10-18-615db61/decisions.jsonl`, rows with `meta.run` of `main` and router `systemone`.
 - **Why it matters:** the scale is unusual, but the signal is real. A confidence score can tell you when to doubt the router without telling you what to do instead. A fallback to a fixed tier is a guard against a broken router, not a way to improve accuracy. A more useful use of low confidence might be to escalate to the larger tier, or to ask the user.
 
 ## Tiers, reasoning levels and switching cost

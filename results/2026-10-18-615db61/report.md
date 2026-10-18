@@ -1,6 +1,6 @@
 # Routing evaluation
 
-Run 2026-10-18T12:31:30.578Z at commit `cb379e3`, dataset revision `a91a874`: 21 prompts, 1 sessions (18 turns).
+Run 2026-10-18T12:31:30.578Z at commit `615db61`, dataset revision `ad716c3`: 21 prompts, 1 sessions (18 turns).
 Threshold 0.1, margin 0.15, state budget 8192 tokens, default tier medium.
 
 Agreement is with the single tier the user labelled. Intervals are Wilson 95%; the sample is small, so read them before the point estimates. Each router was called once before measuring, so latencies exclude one-off model loading.
