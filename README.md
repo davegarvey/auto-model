@@ -1,6 +1,8 @@
 # auto-model
 
-An experiment in automatic model selection for a coding agent. Before each turn in [OpenCode](https://opencode.ai), a small local "System One" decision model, [Kev](https://github.com/jaredpalmer/kev), picks which tier of model should handle the request: small, medium or large. The agent then switches to that tier's model. Everything runs locally, with no accounts or API keys.
+An experiment in automatic model selection for a coding agent. Before each turn in [OpenCode](https://opencode.ai), a "System One" decision model picks which tier of model should handle the request (small, medium or large), and the agent switches to that tier's model.
+
+The default router is [Kev](https://github.com/jaredpalmer/kev), an open copy of TypeSafe's Jev that runs locally; that set-up needs no accounts or API keys. The experiment also tested hosted Jev, which needs an API key, against two baselines: a small general LLM and an embedding router.
 
 The repository accompanies a blog post arguing that manual model selection will go the way of the manual gearbox. It is a small, honest experiment, not a product. Findings are recorded as they happen in [`notes/LEARNINGS.md`](notes/LEARNINGS.md).
 
@@ -11,7 +13,7 @@ The write-up, [`WRITEUP.md`](WRITEUP.md), summarises what the experiment found. 
 - In a follow-up, TypeSafe's hosted Jev chose it for 37 of 39.
 - The embedding baseline did poorly at first, because it compared whole conversations with short example prompts. Embedding only the latest message, it matched Kev at 30 of 39.
 - On a final round of long prompts and terse follow-ups, Jev got 15 of 15, Gemma 12, Kev 9 and the embedding routers 8 and 7.
-- Switching between tiers costs anything from 40 ms to over a minute, depending on the models.
+- Between the shipped tiers, a switch took about 40 ms when only Qwen's thinking changed. Switching from Gemma to Qwen at 8k context took 9.4 s, or about 16 s if Qwen had to load.
 
 The raw results are in [`results/`](results/):
 
