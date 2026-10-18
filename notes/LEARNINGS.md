@@ -110,6 +110,24 @@ Above about 0.2, it was right in 22 of 23 cases. Falling back to `medium` below 
 - **Evidence:** `results/2026-10-18-615db61/decisions.jsonl`, rows with `meta.run` of `main` and router `systemone`.
 - **Why it matters:** the scale is unusual, but the signal is real. A confidence score can tell you when to doubt the router without telling you what to do instead. A fallback to a fixed tier is a guard against a broken router, not a way to improve accuracy. A more useful use of low confidence might be to escalate to the larger tier, or to ask the user.
 
+### 32. The hosted original routed markedly better; this revises entry 23 (2026-10-18)
+TypeSafe's hosted Jev (`jev-1.13`) proposed the labelled tier for 37 of 39 cases (95%, interval 83–99%) in each of three runs. The scoring code, configuration, prompts and labels were the same as before. Kev scored 30/39 and 29/39, and Gemma 29/39. On the same cases, Jev was right on 8 that Gemma missed and none the other way round (exact McNemar p = 0.008). Against Kev the margin was 9 against 2, or 10 against 2, depending on the run (p = 0.07 and 0.04).
+- **Evidence:** `results/2026-10-18-jev-51a31cf/README.md`.
+- **Why it matters:** entry 23's finding that a System One model offered no advantage over a general small model holds for Kev, a 4B open copy, but not for the original. The quality of the decision model matters, and on this data the small local options leave clear accuracy on the table. All of this is on clear-cut labels (entry 21), so 95% is a best case.
+
+### 33. Same confidence scale, different temperament: the threshold trap was Kev's (2026-10-18)
+Jev's confidence uses the same chance-rescaled formula as Kev's, as documented by TypeSafe: `(p_max − 1/n) / (1 − 1/n)`. But Jev's median confidence was 0.95, against Kev's 0.25. The 0.4 threshold that disabled Kev (entry 22) would have changed one of Jev's 39 decisions. All 31 cases at 0.8 or above were right, and both misses fell between 0.6 and 0.8. The threshold sweep found no setting that improved on no fallback.
+- **Why it matters:** a confidence scale is not enough to choose a threshold. You also need the model's own distribution. A threshold copied from one System One model to another can be harmless or crippling.
+
+### 34. Jev's answers were repeatable (2026-10-18)
+Three runs made the same choice on all 39 cases, with probabilities differing by at most 0.09. No temperature or seed setting is documented. Kev, by contrast, flipped borderline cases between runs (entry 28).
+- **Why it matters:** repeatability makes a router's behaviour testable and its log explainable. For Kev, much of the run-to-run noise came from low-confidence cases that a more decisive model doesn't have.
+
+### 35. Buying the better router means a third party, a network hop and some unclear billing (2026-10-18)
+Jev was reached through a reseller. TypeSafe was reported in September to have paused new sign-ups. Its API took TypeSafe's request body, but at a different path from the documented `/v1/systemone`, which had to be found in the reseller's page source. Its price was double TypeSafe's reported list price, charged on input tokens only. Jev also counted about twice as many input tokens as Kev for the same states. The responses reported $0.0025 per 39-case run, but the account balance fell by more than the reported charges added up to, and kept falling for a few minutes afterwards. Routing latency was a median of 356 ms (p95 1.2 s) including the network, against 84–140 ms locally. The response names TypeSafe as the provider, but nothing confirms that requests pass through unchanged.
+- **Evidence:** `results/2026-10-18-jev-51a31cf/README.md`.
+- **Why it matters:** the accuracy gain is real but comes bundled with the costs a local set-up avoids. The session text leaves the machine, there is a party in the middle, and the bill is hard to audit. At fractions of a cent per session, money is not the obstacle; trust and data handling are.
+
 ## Tiers, reasoning levels and switching cost
 
 ### 4. "Reasoning effort" is often just on or off (2026-10-18)

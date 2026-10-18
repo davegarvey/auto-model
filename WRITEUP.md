@@ -2,11 +2,12 @@
 
 ## The question
 
-Coding agents ask you to pick a model, and usually a reasoning level as well. The thesis behind this repository is that this choice will move from the user to the agent: a small, fast "System One" model reads the session and picks the cheapest model that can handle each request. This proof of concept tested that thesis on one laptop (a 64 GB MacBook Pro M5), using only local models:
+Coding agents ask you to pick a model, and usually a reasoning level as well. The thesis behind this repository is that this choice will move from the user to the agent: a small, fast "System One" model reads the session and picks the cheapest model that can handle each request. This proof of concept tested that thesis on one laptop (a 64 GB MacBook Pro M5), using local models, with one hosted model added in a follow-up:
 
 - **Agent:** OpenCode 2.0.30.
 - **Tiers:** `small` is Gemma 4 E2B; `medium` is Qwen 3.6 35B with thinking off; `large` is the same Qwen model with thinking on.
-- **Decision model:** Kev-4B (`jaredpalmer/kev-4b@v1.0`), a System One model served locally over MLX.
+- **Decision model:** Kev-4B (`jaredpalmer/kev-4b@v1.0`), a community System One model on Qwen 3.5 4B, served locally over MLX. It copies the API of TypeSafe's Jev.
+- **Follow-up:** Jev itself (`jev-1.13`), the hosted original, reached through a third-party reseller.
 - **Baselines:** an embedding nearest-neighbour router (EmbeddingGemma) and a small general LLM asked for a JSON answer (Gemma 4 E2B).
 
 A plugin routes every user turn, applies a confidence fallback, switches the model before the turn runs, and logs each decision. Everything here is reproducible from the repository. The running log of findings is in [`notes/LEARNINGS.md`](notes/LEARNINGS.md), and each figure below cites its source in [`results/`](results/).
@@ -31,13 +32,45 @@ A plugin routes every user turn, applies a confidence fallback, switches the mod
 
 **Kev is not deterministic.** Two runs on identical inputs gave 29 and then 30 correct proposals; its server samples at a temperature of 2.41. With confidences around 0.2, borderline decisions are close to a coin toss.
 
+## Follow-up: the hosted original
+
+Kev is a small open copy of TypeSafe's System One API, which raises the question of whether the hosted original does better. A follow-up therefore ran Jev itself, three times, over the same 39 cases and labels. The scoring code and configuration were identical to the earlier runs ([`results/2026-10-18-jev-51a31cf`](results/2026-10-18-jev-51a31cf/README.md)).
+
+| Router | All 39 cases | Single prompts | Session turns |
+|---|---|---|---|
+| Jev (hosted) | 37/39 (95%, interval 83–99%) | 20/21 | 17/18 |
+| Kev (local) | 30/39 (77%, 62–87%); 29/39 in another run | 18/21 | 12/18 |
+| Gemma 4 E2B (local) | 29/39 (74%, 59–85%) | 16/21 | 13/18 |
+| Embedding (local) | 15/39 (38%, 25–54%) | 11/21 | 4/18 |
+
+**Jev was clearly better than the small general model, and probably better than Kev.** Every router saw the same cases, so the comparison can be paired:
+- **Against Gemma:** Jev was right on 8 cases Gemma missed, and on none the other way round. An exact McNemar test gives p = 0.008.
+- **Against Kev:** 9 cases against 2, or 10 against 2, depending on which Kev run is compared (p = 0.07 and 0.04). The direction is consistent, but the sample is too small to call it firmly.
+
+The earlier conclusion that a System One model offered no advantage over a general small model was a finding about Kev, not about the approach.
+
+**Its two misses were both near the edge:**
+- **A large task sent to small.** It routed the stale-cache puzzle ("results stay stale for an hour, yet the TTL is five minutes") to `small`.
+- **A follow-up sent to large.** It routed "Try making the log writes sequential" to `large`. That message comes in the middle of an unresolved flaky-test investigation, so arguably it inherited that task's difficulty.
+
+**Jev was decisive and repeatable:**
+- **Confidence.** It uses the same chance-rescaled scale as Kev, with a median of 0.95 against Kev's 0.25. All 31 cases at 0.8 or above were right, and both misses fell between 0.6 and 0.8.
+- **The threshold trap was Kev's.** The 0.4 threshold that disabled Kev would have changed one of Jev's decisions.
+- **Repeatability.** All three runs made the same choice on every case, with probabilities varying by at most 0.09.
+- **Switching.** In the session it switched tiers 10 times in 18 turns, and applied the right tier on 17.
+
+**The costs are different in kind:**
+- **Latency.** The median was 356 ms and the p95 1.2 s, against 84–140 ms locally. This includes the network round trip and the reseller, and is still small next to a real turn.
+- **Money.** The responses reported $0.0025 per run of 39 cases, at $0.084 per million input tokens. The account balance fell by about $0.013 across all three runs plus test calls, more than the per-call figures add up to. Either way it is fractions of a cent per session.
+- **Privacy and dependency.** The session text leaves the machine, and a third party sits in the path. The response reports TypeSafe as the provider, but it could not be confirmed that the reseller passes requests on unchanged.
+
 ## What was harder than expected
 
 **The host agent, not the decision.** `opencode run` stalled before creating a session on roughly every other invocation, and the repository works around this with a retry watchdog. In the live session, those retries re-sent one prompt twice. The plugin documentation describes an older API than the one that makes this possible. Plugins have no clean channel to tell the user "switched to large because…", and OpenCode makes model calls you did not choose: with the user's normal configuration, session titles went to a hosted OpenAI model while every turn ran locally.
 
 **Cold starts.** Local models are loaded and evicted on demand. In the first full run, the embedding router failed every call, because loading it took longer than the timeout and each abandoned request left it unloaded. The fix was generous timeouts and a warm-up.
 
-**Labels.** Deciding the "right" tier is a judgement call, and some requests have no single answer. To keep labels unambiguous, the evaluation prompts and the session were written to sit clearly in one tier, and borderline drafts were discarded. This makes the agreement figures a best case for clear requests. The grey zone that real use contains is not measured here.
+**Labels.** Deciding the "right" tier is a judgement call, and some requests have no single answer. To avoid individual judgement calls, the experiment agent drafted the prompts, the session and their labels to sit clearly in one tier, and borderline drafts were discarded. The same agent also wrote the tier descriptions the routers receive. This makes every agreement figure here, including Jev's 95%, a best case for clear requests. The grey zone that real use contains is not measured.
 
 ## Switching costs
 
@@ -73,16 +106,19 @@ Memory is the other limit. Kev, Gemma and Qwen together took about 37 GB in stea
 Partly.
 
 - **Mechanically, yes.** An agent can choose its own model per turn, including the reasoning level, with about a thousand lines of plugin and routing code and well under a second of routing time on short states. A simple question went to a 2B model and a hard one to a thinking model, without the user doing anything.
-- **On accuracy, the evidence is modest.** About three-quarters agreement with clear-cut labels, on 39 cases, with intervals of roughly ±12 points. A specialised System One model was not measurably better than a general small model. The most consequential setting, the fallback threshold, had to be tuned from data, or it quietly turned automatic selection into "always medium".
+- **On accuracy, it depends on the decision model.** The local options agreed with clear-cut labels about three times in four. Both Kev, a 4B open copy, and a general 2B model reached that level, and neither beat the other. Hosted Jev agreed 37 times in 39, clearly better than the general model and probably better than Kev. The sample is 39 clear cases, so even Jev's figure has an interval of 83–99%. With Kev, the most consequential setting was the fallback threshold. It had to be tuned from data, or it quietly turned automatic selection into "always medium".
 - **Economically, it depends on the menu.** Where the tiers share weights and the reasoning toggle sits at the end of the prompt, as with Qwen here, switching is nearly free and routing pays off. Where tiers are different models, each switch re-reads the whole context. That favours staying put and penalises a router that flips often.
 
-A fair conclusion for this proof of concept: automatic selection is practical now, and the bottleneck is not the decision model. It is the host agent's support, the price of switching, and the absence of good labels for the ambiguous middle. Those are engineering and evaluation problems rather than research ones, which is itself an argument that manual selection will not last.
+A fair conclusion for this proof of concept: automatic selection is practical now. A strong decision model makes it accurate on clear requests, for a fraction of a cent and a few hundred milliseconds per turn. The trade-off is that the session text leaves the machine. A small local model is free and private, but makes noticeably more mistakes.
+
+The remaining obstacles are the host agent's support, the price of switching, and the absence of good labels for the ambiguous middle. Those are engineering and evaluation problems rather than research ones, which is itself an argument that manual selection will not last.
 
 ## Limits of this evidence
 
-- **Sample size.** One person's labels, written to be unambiguous: 21 prompts and one 18-turn scripted session.
+- **Sample size.** 21 prompts and one 18-turn scripted session. The prompts and labels were drafted by the experiment agent to be unambiguous, with borderline drafts discarded.
 - **Short states.** No long real sessions, so long context is untested.
-- **Specific choices.** One laptop, one agent version, one System One model and an illustrative three-tier menu.
-- **Local costs only.** Cost is measured in time; all models are local, so money cost is zero.
+- **Specific choices.** One laptop, one agent version, two System One models and an illustrative three-tier menu.
+- **A reseller in the path.** Jev was reached through a third party. It could not be confirmed that requests reach TypeSafe unchanged, and the latency figures include the reseller.
+- **Costs.** The local models cost time, not money. Jev's money cost is the reseller's price, not TypeSafe's list price.
 
 Read every figure with its interval. The repository includes everything needed to rerun the experiment with your own labels.

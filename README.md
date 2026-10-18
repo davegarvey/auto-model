@@ -7,8 +7,8 @@ The repository accompanies a blog post arguing that manual model selection will 
 ## Results
 
 The write-up, [`WRITEUP.md`](WRITEUP.md), summarises what the experiment found. In brief:
-- Kev chose the labelled tier for 30 of 39 clear-cut cases.
-- A small general model did about as well.
+- Locally, Kev chose the labelled tier for 30 of 39 clear-cut cases, and a small general model did about as well.
+- In a follow-up, TypeSafe's hosted Jev chose it for 37 of 39.
 - The embedding baseline did poorly.
 - Switching between tiers costs anything from 40 ms to over a minute, depending on the models.
 
@@ -18,6 +18,7 @@ The raw results are in [`results/`](results/):
 |---|---|
 | `2026-10-18-ad716c3` | Routing evaluation at the original threshold of 0.4 |
 | `2026-10-18-615db61` | Routing evaluation at the tuned threshold of 0.1 |
+| `2026-10-18-jev-51a31cf` | Follow-up: hosted Jev, three runs over the same cases |
 | `2026-10-18-switch-cost` | Switching cost benchmark |
 | `2026-10-18-live` | Decision log of a live OpenCode session |
 
