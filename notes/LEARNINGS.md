@@ -62,6 +62,43 @@ In the first end-to-end evaluation run, the embedding router failed every call. 
 The 21 single prompts in `data/eval/prompts.jsonl` (7 per tier) were drafted by the assistant, not taken from real use, and written to sit clearly inside one tier. Four first drafts that could reasonably go either way were replaced rather than labelled. The user chose not to make judgement calls on individual labels.
 - **Why it matters:** agreement on these prompts measures whether a router can tell clear cases apart, not how it handles the grey zone that entry 18 showed real requests contain. Read the single-prompt figures as an upper bound. The multi-turn session, where follow-ups inherit difficulty from context, is the harder and more realistic test.
 
+## Evaluation results
+
+### 22. A fallback threshold set in advance silently disabled the router (2026-10-18)
+At the planned threshold of 0.4, 72% of Kev's decisions fell back to the default tier. On the 18-turn session, every turn but one ran on `medium` and the tier never changed. Kev proposed the labelled tier 74% of the time, but only 56% of applied tiers matched. Its median confidence was 0.25. At a threshold of 0.1, applied agreement rose to 69%.
+- **Evidence:** `results/2026-10-18-a91a874/report.md` (threshold 0.4) and `results/2026-10-18-cb379e3/report.md` (threshold 0.1).
+- **Why it matters:** this is entry 9's warning realised. A safety net tuned without data turned automatic selection into "always medium", and nothing failed visibly. Only the decision log's reason codes showed it.
+
+### 23. A small general model routed as well as the specialised one (2026-10-18)
+Gemma 4 E2B, asked for a JSON answer, proposed the labelled tier 74% of the time, against Kev's 77%. The intervals overlap almost entirely (59–85% and 62–87%), and median latency was similar (140 ms against 131 ms). On session turns, Gemma was slightly ahead (72% against 67%). Its confidence carried no information: it never fell below 0.9, so its threshold sweep is flat.
+- **Why it matters:** on this data, a purpose-built System One model gave no measurable accuracy advantage over a general 2B-class model running locally. What Kev offers is a probability over the choices, which makes a fallback possible but also obliges you to tune one. The sample is small; the honest reading is "no difference detected", not "no difference".
+
+### 24. Where the routers go wrong matters more than how often (2026-10-18)
+Almost all of Kev's errors fell on the border between `small` and `medium`: in the final run, 4 of 16 small cases went to medium and 4 of 13 medium cases went to small. It recognised 9 of 10 `large` cases. Gemma sent 5 of 13 `medium` cases to `small` in both runs, and sent one `large` case to `small`.
+- **Evidence:** the confusion matrices in `results/2026-10-18-cb379e3/report.md`.
+- **Why it matters:** the errors have different prices. Over-routing wastes compute, while under-routing hands real coding work to the weakest model. Agreement alone hides this; the confusion matrix is the more useful view for choosing a router.
+
+### 25. The embedding baseline is weak, and biased towards the expensive tier (2026-10-18)
+The k-nearest-neighbour router over 30 examples agreed with the labels 38% of the time, and 22% on session turns. It proposed `large` for 30 of 39 cases.
+- **Why it matters:** with a few dozen examples, "nearest labelled prompt" mostly measures surface wording. The longer, context-laden states of a session look like the long `large` examples. Matching on embeddings is cheap, but it is not a substitute for a model that reads the request.
+
+### 26. Hysteresis cost agreement and saved little (2026-10-18)
+On the session, a 0.15 hysteresis margin cut Kev's switches from 7 to 5 and lowered agreement from 11/18 to 9/18. The switch it most often prevented, between `medium` and `large`, is Qwen's thinking toggle, which costs about 40 ms (entry 19). The margin is now 0 by default.
+- **Why it matters:** damping is worth having only when switching is expensive. With tiers that share a model, it mostly delays the right answer.
+
+### 27. A scripted session cannot test long context (2026-10-18)
+The state-size sweep gave identical agreement at every budget, because the session's states were about 490 tokens and none was truncated. The session was scripted to keep labels clear-cut, which also kept it short.
+- **Why it matters:** the question of whether a router benefits from more history, and Kev's 8k validated context, remain untested. Testing them needs long real sessions with tool output, and labelling those is exactly the judgement-heavy work that entries 18 and 21 describe.
+
+### 28. Kev's answers vary between identical runs (2026-10-18)
+Rerunning the same dataset gave 29 and then 30 correct proposals. Kev's server reports a sampling temperature of 2.41, and some low-confidence cases flipped.
+- **Why it matters:** with confidences around 0.2, a router's choice on borderline cases is close to a coin toss. One run's agreement figure carries noise beyond its confidence interval.
+
+### 29. Retries in the harness can resend a prompt (2026-10-18)
+In the live session, `opencode run` stalled twice before reporting a session. The watchdog retried, and the prompt was routed three times, because the service had already accepted it.
+- **Evidence:** `results/2026-10-18-live/`.
+- **Why it matters:** this follows on from entry 12. Working around a flaky host changes what the selector sees, and the decision log is how you notice.
+
 ## Tiers, reasoning levels and switching cost
 
 ### 4. "Reasoning effort" is often just on or off (2026-10-18)
@@ -92,6 +129,14 @@ This is a smoke run of the switching cost benchmark: 2,048-token context, one re
 The last row is slow because Qwen 3.8 is a dense 27B model reading 2k tokens, against 1.9 s for the 35B mixture-of-experts Qwen 3.6.
 - **Evidence:** a smoke output in the scratchpad. The full run (2k, 8k and 32k tokens, three repetitions) is task 8.1.
 - **Why it matters:** this confirms entry 6 with numbers. Whether a "gear change" is free depends on where the model's template puts the setting: Qwen's thinking toggle sits at the end and reuses the cache, while gpt-oss's effort sits at the top and does not. A model from the same family shares nothing. Model size class matters more to switching cost than family, because a dense model re-reads context many times more slowly than a mixture-of-experts model of similar size. The shipped design's cheap switch is medium to large, and its expensive one is to and from small.
+
+### 30. Full switching cost run: the costs grow faster than the context (2026-10-18)
+This is the median of three repetitions at 2k and 8k tokens; 32k was dropped for time. Qwen's thinking toggle stayed free: 37 ms and 39 ms. Every other switch re-read the context, and quadrupling the context made the switches four to five times slower:
+- gpt-oss effort change: 1.8 s, then 7.8 s;
+- Gemma to Qwen 3.6, loaded: 1.9 s, then 9.4 s;
+- Qwen 3.6 to Qwen 3.8: 16.5 s, then 78 s.
+- **Evidence:** `results/2026-10-18-switch-cost/switch-cost.md`.
+- **Why it matters:** this confirms entry 19 at scale. On a long local session, an unnecessary trip to the cheap tier costs seconds, and on a dense model tens of seconds. Routers should be judged on switching behaviour as well as agreement.
 
 ## The decision model
 
