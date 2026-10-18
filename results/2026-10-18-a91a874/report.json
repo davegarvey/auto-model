@@ -1,0 +1,2509 @@
+{
+  "meta": {
+    "date": "2026-10-18T12:30:15.776Z",
+    "commit": "a91a874",
+    "datasetRevision": "a91a874",
+    "dataset": {
+      "prompts": 21,
+      "sessions": 1,
+      "turns": 18
+    },
+    "config": {
+      "enabled": true,
+      "tiers": [
+        {
+          "id": "small",
+          "description": "Quick, low-stakes requests that need little reasoning: answering a factual question about the code, explaining a short snippet, renaming or reformatting, a one-line fix, running a command and reporting the result.",
+          "model": "ollama/gemma4:e2b-mlx",
+          "variant": "none"
+        },
+        {
+          "id": "medium",
+          "description": "Typical coding work: implementing a well-specified feature, editing several files, writing tests, routine debugging with a clear error message, continuing a task that is already under way.",
+          "model": "ollama/qwen3.6:35b-mlx",
+          "variant": "none"
+        },
+        {
+          "id": "large",
+          "description": "Hard problems that need careful step-by-step reasoning: diagnosing a subtle or intermittent bug, designing an architecture or algorithm, weighing trade-offs, large refactors, or a previous attempt that has failed.",
+          "model": "ollama/qwen3.6:35b-mlx",
+          "variant": "high"
+        }
+      ],
+      "defaultTier": "medium",
+      "router": "systemone",
+      "systemOne": {
+        "baseURL": "http://localhost:8009",
+        "model": "kev-latest",
+        "timeoutMs": 30000,
+        "pricePerMTok": 0
+      },
+      "embedding": {
+        "baseURL": "http://localhost:11434",
+        "model": "embeddinggemma",
+        "examples": "/Users/dave/code/auto-model/data/router-examples.jsonl",
+        "k": 5,
+        "timeoutMs": 30000
+      },
+      "llm": {
+        "baseURL": "http://localhost:11434",
+        "model": "gemma4:e2b-mlx",
+        "timeoutMs": 30000
+      },
+      "policy": {
+        "threshold": 0.4,
+        "margin": 0.15
+      },
+      "state": {
+        "budgetTokens": 8192
+      },
+      "log": {
+        "path": "/Users/dave/.local/state/auto-model/decisions.jsonl",
+        "captureState": false
+      }
+    },
+    "versions": {
+      "node": "24.21.0",
+      "opencode": "opencode v2.0.30",
+      "ollama": "0.32.14",
+      "models": {
+        "embeddinggemma:latest": "85462619ee72",
+        "gemma4:e2b-mlx": "e98b54fe1913",
+        "qwen3.6:35b-mlx": "1b50c6fdc2d4"
+      },
+      "systemOne": {
+        "name": "kev-latest",
+        "description": "Kev pointer head on Qwen/Qwen3.5-4B-Base, serving jaredpalmer/kev-4b@v1.0 at temperature 2.41",
+        "release_date": "2026-10-01",
+        "run": "jaredpalmer/kev-4b@v1.0",
+        "base": "Qwen/Qwen3.5-4B-Base",
+        "lora": 16,
+        "device": "mps",
+        "backend": "mlx",
+        "dtype": "bfloat16",
+        "temperature": 2.406050072164233,
+        "max_state_tokens": 65536,
+        "truncate_states": false,
+        "cuda_graphs": null,
+        "prefix_cache": {
+          "size": 4,
+          "min_state_tokens": 0,
+          "max_tokens": 65536,
+          "hits": 17,
+          "misses": 145,
+          "cached_states": 4,
+          "oom_retries": 0
+        },
+        "batches": {
+          "count": 162,
+          "requests": 162,
+          "queued": 0
+        }
+      }
+    }
+  },
+  "summaries": [
+    {
+      "router": "systemone",
+      "model": "kev-latest",
+      "modelVersion": "kev-latest",
+      "overall": {
+        "agree": 29,
+        "n": 39,
+        "rate": 0.7435897435897436,
+        "ci": {
+          "low": 0.589180432321585,
+          "high": 0.854313741565478
+        }
+      },
+      "prompts": {
+        "agree": 18,
+        "n": 21,
+        "rate": 0.8571428571428571,
+        "ci": {
+          "low": 0.6536350585077049,
+          "high": 0.950190782017865
+        }
+      },
+      "turns": {
+        "agree": 11,
+        "n": 18,
+        "rate": 0.6111111111111112,
+        "ci": {
+          "low": 0.3861866858065617,
+          "high": 0.7969500807306884
+        }
+      },
+      "applied": {
+        "agree": 22,
+        "n": 39,
+        "rate": 0.5641025641025641,
+        "ci": {
+          "low": 0.40975423474522105,
+          "high": 0.7069547583829534
+        }
+      },
+      "confusion": {
+        "small": {
+          "small": 10,
+          "medium": 6,
+          "large": 0,
+          "error": 0
+        },
+        "medium": {
+          "small": 3,
+          "medium": 10,
+          "large": 0,
+          "error": 0
+        },
+        "large": {
+          "small": 0,
+          "medium": 1,
+          "large": 9,
+          "error": 0
+        }
+      },
+      "latency": {
+        "median": 140,
+        "p95": 407
+      },
+      "tokens": {
+        "input": 15744,
+        "output": 2442
+      },
+      "costUSD": 0,
+      "errors": 0,
+      "thresholdSweep": [
+        {
+          "threshold": 0,
+          "agreement": {
+            "agree": 29,
+            "n": 39,
+            "rate": 0.7435897435897436,
+            "ci": {
+              "low": 0.589180432321585,
+              "high": 0.854313741565478
+            }
+          },
+          "fallbackRate": 0
+        },
+        {
+          "threshold": 0.1,
+          "agreement": {
+            "agree": 29,
+            "n": 39,
+            "rate": 0.7435897435897436,
+            "ci": {
+              "low": 0.589180432321585,
+              "high": 0.854313741565478
+            }
+          },
+          "fallbackRate": 0
+        },
+        {
+          "threshold": 0.2,
+          "agreement": {
+            "agree": 27,
+            "n": 39,
+            "rate": 0.6923076923076923,
+            "ci": {
+              "low": 0.535784513844354,
+              "high": 0.8143424655401694
+            }
+          },
+          "fallbackRate": 0.358974358974359
+        },
+        {
+          "threshold": 0.3,
+          "agreement": {
+            "agree": 25,
+            "n": 39,
+            "rate": 0.6410256410256411,
+            "ci": {
+              "low": 0.484178631846895,
+              "high": 0.772581153035089
+            }
+          },
+          "fallbackRate": 0.5897435897435898
+        },
+        {
+          "threshold": 0.4,
+          "agreement": {
+            "agree": 22,
+            "n": 39,
+            "rate": 0.5641025641025641,
+            "ci": {
+              "low": 0.40975423474522105,
+              "high": 0.7069547583829534
+            }
+          },
+          "fallbackRate": 0.717948717948718
+        },
+        {
+          "threshold": 0.5,
+          "agreement": {
+            "agree": 19,
+            "n": 39,
+            "rate": 0.48717948717948717,
+            "ci": {
+              "low": 0.3386492878313309,
+              "high": 0.6380089135430342
+            }
+          },
+          "fallbackRate": 0.8205128205128205
+        },
+        {
+          "threshold": 0.6,
+          "agreement": {
+            "agree": 15,
+            "n": 39,
+            "rate": 0.38461538461538464,
+            "ci": {
+              "low": 0.24891162547007065,
+              "high": 0.5410121868992154
+            }
+          },
+          "fallbackRate": 0.9487179487179487
+        },
+        {
+          "threshold": 0.7,
+          "agreement": {
+            "agree": 13,
+            "n": 39,
+            "rate": 0.3333333333333333,
+            "ci": {
+              "low": 0.20632766106915157,
+              "high": 0.4902289567975947
+            }
+          },
+          "fallbackRate": 1
+        },
+        {
+          "threshold": 0.8,
+          "agreement": {
+            "agree": 13,
+            "n": 39,
+            "rate": 0.3333333333333333,
+            "ci": {
+              "low": 0.20632766106915157,
+              "high": 0.4902289567975947
+            }
+          },
+          "fallbackRate": 1
+        },
+        {
+          "threshold": 0.9,
+          "agreement": {
+            "agree": 13,
+            "n": 39,
+            "rate": 0.3333333333333333,
+            "ci": {
+              "low": 0.20632766106915157,
+              "high": 0.4902289567975947
+            }
+          },
+          "fallbackRate": 1
+        }
+      ],
+      "sessions": [
+        {
+          "session": "cli-option-and-flaky-test",
+          "turns": 18,
+          "withHysteresis": {
+            "agreement": {
+              "agree": 6,
+              "n": 18,
+              "rate": 0.3333333333333333,
+              "ci": {
+                "low": 0.1627855436366286,
+                "high": 0.5625093065574964
+              }
+            },
+            "switches": 0
+          },
+          "withoutHysteresis": {
+            "agreement": {
+              "agree": 6,
+              "n": 18,
+              "rate": 0.3333333333333333,
+              "ci": {
+                "low": 0.1627855436366286,
+                "high": 0.5625093065574964
+              }
+            },
+            "switches": 0
+          }
+        }
+      ]
+    },
+    {
+      "router": "embedding",
+      "model": "embeddinggemma",
+      "overall": {
+        "agree": 15,
+        "n": 39,
+        "rate": 0.38461538461538464,
+        "ci": {
+          "low": 0.24891162547007065,
+          "high": 0.5410121868992154
+        }
+      },
+      "prompts": {
+        "agree": 11,
+        "n": 21,
+        "rate": 0.5238095238095238,
+        "ci": {
+          "low": 0.32369217900266756,
+          "high": 0.7165628770323705
+        }
+      },
+      "turns": {
+        "agree": 4,
+        "n": 18,
+        "rate": 0.2222222222222222,
+        "ci": {
+          "low": 0.09000781913382,
+          "high": 0.4521502645230549
+        }
+      },
+      "applied": {
+        "agree": 19,
+        "n": 39,
+        "rate": 0.48717948717948717,
+        "ci": {
+          "low": 0.3386492878313309,
+          "high": 0.6380089135430342
+        }
+      },
+      "confusion": {
+        "small": {
+          "small": 3,
+          "medium": 3,
+          "large": 10,
+          "error": 0
+        },
+        "medium": {
+          "small": 1,
+          "medium": 2,
+          "large": 10,
+          "error": 0
+        },
+        "large": {
+          "small": 0,
+          "medium": 0,
+          "large": 10,
+          "error": 0
+        }
+      },
+      "latency": {
+        "median": 89,
+        "p95": 132
+      },
+      "tokens": {
+        "input": 7369,
+        "output": 0
+      },
+      "costUSD": 0,
+      "errors": 0,
+      "thresholdSweep": [
+        {
+          "threshold": 0,
+          "agreement": {
+            "agree": 15,
+            "n": 39,
+            "rate": 0.38461538461538464,
+            "ci": {
+              "low": 0.24891162547007065,
+              "high": 0.5410121868992154
+            }
+          },
+          "fallbackRate": 0
+        },
+        {
+          "threshold": 0.1,
+          "agreement": {
+            "agree": 15,
+            "n": 39,
+            "rate": 0.38461538461538464,
+            "ci": {
+              "low": 0.24891162547007065,
+              "high": 0.5410121868992154
+            }
+          },
+          "fallbackRate": 0
+        },
+        {
+          "threshold": 0.2,
+          "agreement": {
+            "agree": 16,
+            "n": 39,
+            "rate": 0.41025641025641024,
+            "ci": {
+              "low": 0.27079089435400483,
+              "high": 0.5658165152665509
+            }
+          },
+          "fallbackRate": 0.1282051282051282
+        },
+        {
+          "threshold": 0.3,
+          "agreement": {
+            "agree": 16,
+            "n": 39,
+            "rate": 0.41025641025641024,
+            "ci": {
+              "low": 0.27079089435400483,
+              "high": 0.5658165152665509
+            }
+          },
+          "fallbackRate": 0.1282051282051282
+        },
+        {
+          "threshold": 0.4,
+          "agreement": {
+            "agree": 19,
+            "n": 39,
+            "rate": 0.48717948717948717,
+            "ci": {
+              "low": 0.3386492878313309,
+              "high": 0.6380089135430342
+            }
+          },
+          "fallbackRate": 0.3076923076923077
+        },
+        {
+          "threshold": 0.5,
+          "agreement": {
+            "agree": 17,
+            "n": 39,
+            "rate": 0.4358974358974359,
+            "ci": {
+              "low": 0.2930452416170466,
+              "high": 0.5902457652547789
+            }
+          },
+          "fallbackRate": 0.5128205128205128
+        },
+        {
+          "threshold": 0.6,
+          "agreement": {
+            "agree": 17,
+            "n": 39,
+            "rate": 0.4358974358974359,
+            "ci": {
+              "low": 0.2930452416170466,
+              "high": 0.5902457652547789
+            }
+          },
+          "fallbackRate": 0.5128205128205128
+        },
+        {
+          "threshold": 0.7,
+          "agreement": {
+            "agree": 19,
+            "n": 39,
+            "rate": 0.48717948717948717,
+            "ci": {
+              "low": 0.3386492878313309,
+              "high": 0.6380089135430342
+            }
+          },
+          "fallbackRate": 0.6410256410256411
+        },
+        {
+          "threshold": 0.8,
+          "agreement": {
+            "agree": 17,
+            "n": 39,
+            "rate": 0.4358974358974359,
+            "ci": {
+              "low": 0.2930452416170466,
+              "high": 0.5902457652547789
+            }
+          },
+          "fallbackRate": 0.8461538461538461
+        },
+        {
+          "threshold": 0.9,
+          "agreement": {
+            "agree": 17,
+            "n": 39,
+            "rate": 0.4358974358974359,
+            "ci": {
+              "low": 0.2930452416170466,
+              "high": 0.5902457652547789
+            }
+          },
+          "fallbackRate": 0.8461538461538461
+        }
+      ],
+      "sessions": [
+        {
+          "session": "cli-option-and-flaky-test",
+          "turns": 18,
+          "withHysteresis": {
+            "agreement": {
+              "agree": 6,
+              "n": 18,
+              "rate": 0.3333333333333333,
+              "ci": {
+                "low": 0.1627855436366286,
+                "high": 0.5625093065574964
+              }
+            },
+            "switches": 2
+          },
+          "withoutHysteresis": {
+            "agreement": {
+              "agree": 6,
+              "n": 18,
+              "rate": 0.3333333333333333,
+              "ci": {
+                "low": 0.1627855436366286,
+                "high": 0.5625093065574964
+              }
+            },
+            "switches": 2
+          }
+        }
+      ]
+    },
+    {
+      "router": "llm",
+      "model": "gemma4:e2b-mlx",
+      "overall": {
+        "agree": 28,
+        "n": 39,
+        "rate": 0.717948717948718,
+        "ci": {
+          "low": 0.5622438267752261,
+          "high": 0.8345667498605671
+        }
+      },
+      "prompts": {
+        "agree": 16,
+        "n": 21,
+        "rate": 0.7619047619047619,
+        "ci": {
+          "low": 0.5490841802765406,
+          "high": 0.8937214361088773
+        }
+      },
+      "turns": {
+        "agree": 12,
+        "n": 18,
+        "rate": 0.6666666666666666,
+        "ci": {
+          "low": 0.4374906934425036,
+          "high": 0.8372144563633714
+        }
+      },
+      "applied": {
+        "agree": 28,
+        "n": 39,
+        "rate": 0.717948717948718,
+        "ci": {
+          "low": 0.5622438267752261,
+          "high": 0.8345667498605671
+        }
+      },
+      "confusion": {
+        "small": {
+          "small": 15,
+          "medium": 1,
+          "large": 0,
+          "error": 0
+        },
+        "medium": {
+          "small": 5,
+          "medium": 5,
+          "large": 3,
+          "error": 0
+        },
+        "large": {
+          "small": 1,
+          "medium": 1,
+          "large": 8,
+          "error": 0
+        }
+      },
+      "latency": {
+        "median": 171,
+        "p95": 275
+      },
+      "tokens": {
+        "input": 17524,
+        "output": 778
+      },
+      "costUSD": 0,
+      "errors": 0,
+      "thresholdSweep": [
+        {
+          "threshold": 0,
+          "agreement": {
+            "agree": 28,
+            "n": 39,
+            "rate": 0.717948717948718,
+            "ci": {
+              "low": 0.5622438267752261,
+              "high": 0.8345667498605671
+            }
+          },
+          "fallbackRate": 0
+        },
+        {
+          "threshold": 0.1,
+          "agreement": {
+            "agree": 28,
+            "n": 39,
+            "rate": 0.717948717948718,
+            "ci": {
+              "low": 0.5622438267752261,
+              "high": 0.8345667498605671
+            }
+          },
+          "fallbackRate": 0
+        },
+        {
+          "threshold": 0.2,
+          "agreement": {
+            "agree": 28,
+            "n": 39,
+            "rate": 0.717948717948718,
+            "ci": {
+              "low": 0.5622438267752261,
+              "high": 0.8345667498605671
+            }
+          },
+          "fallbackRate": 0
+        },
+        {
+          "threshold": 0.3,
+          "agreement": {
+            "agree": 28,
+            "n": 39,
+            "rate": 0.717948717948718,
+            "ci": {
+              "low": 0.5622438267752261,
+              "high": 0.8345667498605671
+            }
+          },
+          "fallbackRate": 0
+        },
+        {
+          "threshold": 0.4,
+          "agreement": {
+            "agree": 28,
+            "n": 39,
+            "rate": 0.717948717948718,
+            "ci": {
+              "low": 0.5622438267752261,
+              "high": 0.8345667498605671
+            }
+          },
+          "fallbackRate": 0
+        },
+        {
+          "threshold": 0.5,
+          "agreement": {
+            "agree": 28,
+            "n": 39,
+            "rate": 0.717948717948718,
+            "ci": {
+              "low": 0.5622438267752261,
+              "high": 0.8345667498605671
+            }
+          },
+          "fallbackRate": 0
+        },
+        {
+          "threshold": 0.6,
+          "agreement": {
+            "agree": 28,
+            "n": 39,
+            "rate": 0.717948717948718,
+            "ci": {
+              "low": 0.5622438267752261,
+              "high": 0.8345667498605671
+            }
+          },
+          "fallbackRate": 0
+        },
+        {
+          "threshold": 0.7,
+          "agreement": {
+            "agree": 28,
+            "n": 39,
+            "rate": 0.717948717948718,
+            "ci": {
+              "low": 0.5622438267752261,
+              "high": 0.8345667498605671
+            }
+          },
+          "fallbackRate": 0
+        },
+        {
+          "threshold": 0.8,
+          "agreement": {
+            "agree": 28,
+            "n": 39,
+            "rate": 0.717948717948718,
+            "ci": {
+              "low": 0.5622438267752261,
+              "high": 0.8345667498605671
+            }
+          },
+          "fallbackRate": 0
+        },
+        {
+          "threshold": 0.9,
+          "agreement": {
+            "agree": 28,
+            "n": 39,
+            "rate": 0.717948717948718,
+            "ci": {
+              "low": 0.5622438267752261,
+              "high": 0.8345667498605671
+            }
+          },
+          "fallbackRate": 0
+        }
+      ],
+      "sessions": [
+        {
+          "session": "cli-option-and-flaky-test",
+          "turns": 18,
+          "withHysteresis": {
+            "agreement": {
+              "agree": 12,
+              "n": 18,
+              "rate": 0.6666666666666666,
+              "ci": {
+                "low": 0.4374906934425036,
+                "high": 0.8372144563633714
+              }
+            },
+            "switches": 7
+          },
+          "withoutHysteresis": {
+            "agreement": {
+              "agree": 12,
+              "n": 18,
+              "rate": 0.6666666666666666,
+              "ci": {
+                "low": 0.4374906934425036,
+                "high": 0.8372144563633714
+              }
+            },
+            "switches": 7
+          }
+        }
+      ]
+    }
+  ],
+  "stateSize": {
+    "router": "systemone",
+    "rows": [
+      {
+        "budgetTokens": 2048,
+        "agreement": {
+          "agree": 13,
+          "n": 18,
+          "rate": 0.7222222222222222,
+          "ci": {
+            "low": 0.49126922453805477,
+            "high": 0.8750043085364452
+          }
+        },
+        "medianLatencyMs": 237,
+        "medianStateTokens": 490,
+        "truncatedTurns": 0
+      },
+      {
+        "budgetTokens": 4096,
+        "agreement": {
+          "agree": 13,
+          "n": 18,
+          "rate": 0.7222222222222222,
+          "ci": {
+            "low": 0.49126922453805477,
+            "high": 0.8750043085364452
+          }
+        },
+        "medianLatencyMs": 237.5,
+        "medianStateTokens": 490,
+        "truncatedTurns": 0
+      },
+      {
+        "budgetTokens": 8192,
+        "agreement": {
+          "agree": 13,
+          "n": 18,
+          "rate": 0.7222222222222222,
+          "ci": {
+            "low": 0.49126922453805477,
+            "high": 0.8750043085364452
+          }
+        },
+        "medianLatencyMs": 237.5,
+        "medianStateTokens": 490,
+        "truncatedTurns": 0
+      },
+      {
+        "budgetTokens": 16384,
+        "agreement": {
+          "agree": 13,
+          "n": 18,
+          "rate": 0.7222222222222222,
+          "ci": {
+            "low": 0.49126922453805477,
+            "high": 0.8750043085364452
+          }
+        },
+        "medianLatencyMs": 241,
+        "medianStateTokens": 490,
+        "truncatedTurns": 0
+      }
+    ]
+  },
+  "cases": [
+    {
+      "router": "systemone",
+      "kind": "prompt",
+      "caseID": "p01",
+      "label": "small",
+      "proposed": "small",
+      "applied": "small",
+      "confidence": 0.6297,
+      "reason": "decision",
+      "latencyMs": 158,
+      "inputTokens": 190,
+      "outputTokens": 63,
+      "costUSD": 0
+    },
+    {
+      "router": "systemone",
+      "kind": "prompt",
+      "caseID": "p02",
+      "label": "small",
+      "proposed": "small",
+      "applied": "small",
+      "confidence": 0.5836,
+      "reason": "decision",
+      "latencyMs": 140,
+      "inputTokens": 199,
+      "outputTokens": 63,
+      "costUSD": 0
+    },
+    {
+      "router": "systemone",
+      "kind": "prompt",
+      "caseID": "p03",
+      "label": "small",
+      "proposed": "small",
+      "applied": "medium",
+      "confidence": 0.2466,
+      "reason": "low-confidence-fallback",
+      "latencyMs": 135,
+      "inputTokens": 186,
+      "outputTokens": 63,
+      "costUSD": 0
+    },
+    {
+      "router": "systemone",
+      "kind": "prompt",
+      "caseID": "p04",
+      "label": "small",
+      "proposed": "small",
+      "applied": "small",
+      "confidence": 0.4837,
+      "reason": "decision",
+      "latencyMs": 133,
+      "inputTokens": 191,
+      "outputTokens": 63,
+      "costUSD": 0
+    },
+    {
+      "router": "systemone",
+      "kind": "prompt",
+      "caseID": "p05",
+      "label": "small",
+      "proposed": "small",
+      "applied": "small",
+      "confidence": 0.5435,
+      "reason": "decision",
+      "latencyMs": 137,
+      "inputTokens": 196,
+      "outputTokens": 63,
+      "costUSD": 0
+    },
+    {
+      "router": "systemone",
+      "kind": "prompt",
+      "caseID": "p06",
+      "label": "small",
+      "proposed": "small",
+      "applied": "small",
+      "confidence": 0.5445,
+      "reason": "decision",
+      "latencyMs": 135,
+      "inputTokens": 189,
+      "outputTokens": 63,
+      "costUSD": 0
+    },
+    {
+      "router": "systemone",
+      "kind": "prompt",
+      "caseID": "p07",
+      "label": "small",
+      "proposed": "small",
+      "applied": "small",
+      "confidence": 0.6594,
+      "reason": "decision",
+      "latencyMs": 139,
+      "inputTokens": 199,
+      "outputTokens": 62,
+      "costUSD": 0
+    },
+    {
+      "router": "systemone",
+      "kind": "prompt",
+      "caseID": "p08",
+      "label": "medium",
+      "proposed": "small",
+      "applied": "medium",
+      "confidence": 0.1609,
+      "reason": "low-confidence-fallback",
+      "latencyMs": 139,
+      "inputTokens": 196,
+      "outputTokens": 63,
+      "costUSD": 0
+    },
+    {
+      "router": "systemone",
+      "kind": "prompt",
+      "caseID": "p09",
+      "label": "medium",
+      "proposed": "medium",
+      "applied": "medium",
+      "confidence": 0.1723,
+      "reason": "low-confidence-fallback",
+      "latencyMs": 140,
+      "inputTokens": 193,
+      "outputTokens": 63,
+      "costUSD": 0
+    },
+    {
+      "router": "systemone",
+      "kind": "prompt",
+      "caseID": "p10",
+      "label": "medium",
+      "proposed": "small",
+      "applied": "medium",
+      "confidence": 0.183,
+      "reason": "low-confidence-fallback",
+      "latencyMs": 137,
+      "inputTokens": 192,
+      "outputTokens": 62,
+      "costUSD": 0
+    },
+    {
+      "router": "systemone",
+      "kind": "prompt",
+      "caseID": "p11",
+      "label": "medium",
+      "proposed": "medium",
+      "applied": "medium",
+      "confidence": 0.2182,
+      "reason": "low-confidence-fallback",
+      "latencyMs": 140,
+      "inputTokens": 203,
+      "outputTokens": 62,
+      "costUSD": 0
+    },
+    {
+      "router": "systemone",
+      "kind": "prompt",
+      "caseID": "p12",
+      "label": "medium",
+      "proposed": "medium",
+      "applied": "medium",
+      "confidence": 0.4821,
+      "reason": "decision",
+      "latencyMs": 137,
+      "inputTokens": 198,
+      "outputTokens": 63,
+      "costUSD": 0
+    },
+    {
+      "router": "systemone",
+      "kind": "prompt",
+      "caseID": "p13",
+      "label": "medium",
+      "proposed": "small",
+      "applied": "medium",
+      "confidence": 0.1344,
+      "reason": "low-confidence-fallback",
+      "latencyMs": 143,
+      "inputTokens": 192,
+      "outputTokens": 62,
+      "costUSD": 0
+    },
+    {
+      "router": "systemone",
+      "kind": "prompt",
+      "caseID": "p14",
+      "label": "medium",
+      "proposed": "medium",
+      "applied": "medium",
+      "confidence": 0.3544,
+      "reason": "low-confidence-fallback",
+      "latencyMs": 140,
+      "inputTokens": 197,
+      "outputTokens": 63,
+      "costUSD": 0
+    },
+    {
+      "router": "systemone",
+      "kind": "prompt",
+      "caseID": "p15",
+      "label": "large",
+      "proposed": "large",
+      "applied": "medium",
+      "confidence": 0.329,
+      "reason": "low-confidence-fallback",
+      "latencyMs": 139,
+      "inputTokens": 200,
+      "outputTokens": 62,
+      "costUSD": 0
+    },
+    {
+      "router": "systemone",
+      "kind": "prompt",
+      "caseID": "p16",
+      "label": "large",
+      "proposed": "large",
+      "applied": "medium",
+      "confidence": 0.1232,
+      "reason": "low-confidence-fallback",
+      "latencyMs": 140,
+      "inputTokens": 206,
+      "outputTokens": 63,
+      "costUSD": 0
+    },
+    {
+      "router": "systemone",
+      "kind": "prompt",
+      "caseID": "p17",
+      "label": "large",
+      "proposed": "large",
+      "applied": "large",
+      "confidence": 0.5518,
+      "reason": "decision",
+      "latencyMs": 138,
+      "inputTokens": 201,
+      "outputTokens": 63,
+      "costUSD": 0
+    },
+    {
+      "router": "systemone",
+      "kind": "prompt",
+      "caseID": "p18",
+      "label": "large",
+      "proposed": "large",
+      "applied": "medium",
+      "confidence": 0.1924,
+      "reason": "low-confidence-fallback",
+      "latencyMs": 138,
+      "inputTokens": 199,
+      "outputTokens": 63,
+      "costUSD": 0
+    },
+    {
+      "router": "systemone",
+      "kind": "prompt",
+      "caseID": "p19",
+      "label": "large",
+      "proposed": "large",
+      "applied": "large",
+      "confidence": 0.4863,
+      "reason": "decision",
+      "latencyMs": 138,
+      "inputTokens": 200,
+      "outputTokens": 63,
+      "costUSD": 0
+    },
+    {
+      "router": "systemone",
+      "kind": "prompt",
+      "caseID": "p20",
+      "label": "large",
+      "proposed": "large",
+      "applied": "medium",
+      "confidence": 0.1751,
+      "reason": "low-confidence-fallback",
+      "latencyMs": 139,
+      "inputTokens": 210,
+      "outputTokens": 63,
+      "costUSD": 0
+    },
+    {
+      "router": "systemone",
+      "kind": "prompt",
+      "caseID": "p21",
+      "label": "large",
+      "proposed": "large",
+      "applied": "large",
+      "confidence": 0.4404,
+      "reason": "decision",
+      "latencyMs": 140,
+      "inputTokens": 211,
+      "outputTokens": 62,
+      "costUSD": 0
+    },
+    {
+      "router": "systemone",
+      "kind": "turn",
+      "caseID": "cli-option-and-flaky-test#1",
+      "label": "small",
+      "proposed": "small",
+      "applied": "medium",
+      "confidence": 0.3072,
+      "reason": "low-confidence-fallback",
+      "latencyMs": 135,
+      "inputTokens": 191,
+      "outputTokens": 63,
+      "costUSD": 0
+    },
+    {
+      "router": "systemone",
+      "kind": "turn",
+      "caseID": "cli-option-and-flaky-test#2",
+      "label": "small",
+      "proposed": "medium",
+      "applied": "medium",
+      "confidence": 0.1027,
+      "reason": "low-confidence-fallback",
+      "latencyMs": 144,
+      "inputTokens": 244,
+      "outputTokens": 63,
+      "costUSD": 0
+    },
+    {
+      "router": "systemone",
+      "kind": "turn",
+      "caseID": "cli-option-and-flaky-test#3",
+      "label": "medium",
+      "proposed": "medium",
+      "applied": "medium",
+      "confidence": 0.2574,
+      "reason": "low-confidence-fallback",
+      "latencyMs": 159,
+      "inputTokens": 293,
+      "outputTokens": 63,
+      "costUSD": 0
+    },
+    {
+      "router": "systemone",
+      "kind": "turn",
+      "caseID": "cli-option-and-flaky-test#4",
+      "label": "medium",
+      "proposed": "medium",
+      "applied": "medium",
+      "confidence": 0.5,
+      "reason": "decision",
+      "latencyMs": 171,
+      "inputTokens": 342,
+      "outputTokens": 60,
+      "costUSD": 0
+    },
+    {
+      "router": "systemone",
+      "kind": "turn",
+      "caseID": "cli-option-and-flaky-test#5",
+      "label": "small",
+      "proposed": "small",
+      "applied": "medium",
+      "confidence": 0.144,
+      "reason": "low-confidence-fallback",
+      "latencyMs": 180,
+      "inputTokens": 391,
+      "outputTokens": 62,
+      "costUSD": 0
+    },
+    {
+      "router": "systemone",
+      "kind": "turn",
+      "caseID": "cli-option-and-flaky-test#6",
+      "label": "medium",
+      "proposed": "medium",
+      "applied": "medium",
+      "confidence": 0.2865,
+      "reason": "low-confidence-fallback",
+      "latencyMs": 210,
+      "inputTokens": 446,
+      "outputTokens": 62,
+      "costUSD": 0
+    },
+    {
+      "router": "systemone",
+      "kind": "turn",
+      "caseID": "cli-option-and-flaky-test#7",
+      "label": "small",
+      "proposed": "small",
+      "applied": "medium",
+      "confidence": 0.2799,
+      "reason": "low-confidence-fallback",
+      "latencyMs": 225,
+      "inputTokens": 510,
+      "outputTokens": 63,
+      "costUSD": 0
+    },
+    {
+      "router": "systemone",
+      "kind": "turn",
+      "caseID": "cli-option-and-flaky-test#8",
+      "label": "small",
+      "proposed": "medium",
+      "applied": "medium",
+      "confidence": 0.2465,
+      "reason": "low-confidence-fallback",
+      "latencyMs": 240,
+      "inputTokens": 545,
+      "outputTokens": 63,
+      "costUSD": 0
+    },
+    {
+      "router": "systemone",
+      "kind": "turn",
+      "caseID": "cli-option-and-flaky-test#9",
+      "label": "large",
+      "proposed": "medium",
+      "applied": "medium",
+      "confidence": 0.1061,
+      "reason": "low-confidence-fallback",
+      "latencyMs": 256,
+      "inputTokens": 600,
+      "outputTokens": 63,
+      "costUSD": 0
+    },
+    {
+      "router": "systemone",
+      "kind": "turn",
+      "caseID": "cli-option-and-flaky-test#10",
+      "label": "medium",
+      "proposed": "medium",
+      "applied": "medium",
+      "confidence": 0.2377,
+      "reason": "low-confidence-fallback",
+      "latencyMs": 263,
+      "inputTokens": 656,
+      "outputTokens": 63,
+      "costUSD": 0
+    },
+    {
+      "router": "systemone",
+      "kind": "turn",
+      "caseID": "cli-option-and-flaky-test#11",
+      "label": "large",
+      "proposed": "large",
+      "applied": "medium",
+      "confidence": 0.3271,
+      "reason": "low-confidence-fallback",
+      "latencyMs": 300,
+      "inputTokens": 729,
+      "outputTokens": 62,
+      "costUSD": 0
+    },
+    {
+      "router": "systemone",
+      "kind": "turn",
+      "caseID": "cli-option-and-flaky-test#12",
+      "label": "medium",
+      "proposed": "medium",
+      "applied": "medium",
+      "confidence": 0.2311,
+      "reason": "low-confidence-fallback",
+      "latencyMs": 320,
+      "inputTokens": 794,
+      "outputTokens": 62,
+      "costUSD": 0
+    },
+    {
+      "router": "systemone",
+      "kind": "turn",
+      "caseID": "cli-option-and-flaky-test#13",
+      "label": "small",
+      "proposed": "medium",
+      "applied": "medium",
+      "confidence": 0.1572,
+      "reason": "low-confidence-fallback",
+      "latencyMs": 335,
+      "inputTokens": 841,
+      "outputTokens": 63,
+      "costUSD": 0
+    },
+    {
+      "router": "systemone",
+      "kind": "turn",
+      "caseID": "cli-option-and-flaky-test#14",
+      "label": "small",
+      "proposed": "medium",
+      "applied": "medium",
+      "confidence": 0.1788,
+      "reason": "low-confidence-fallback",
+      "latencyMs": 345,
+      "inputTokens": 885,
+      "outputTokens": 63,
+      "costUSD": 0
+    },
+    {
+      "router": "systemone",
+      "kind": "turn",
+      "caseID": "cli-option-and-flaky-test#15",
+      "label": "large",
+      "proposed": "large",
+      "applied": "medium",
+      "confidence": 0.1714,
+      "reason": "low-confidence-fallback",
+      "latencyMs": 378,
+      "inputTokens": 954,
+      "outputTokens": 62,
+      "costUSD": 0
+    },
+    {
+      "router": "systemone",
+      "kind": "turn",
+      "caseID": "cli-option-and-flaky-test#16",
+      "label": "medium",
+      "proposed": "medium",
+      "applied": "medium",
+      "confidence": 0.3716,
+      "reason": "low-confidence-fallback",
+      "latencyMs": 393,
+      "inputTokens": 1011,
+      "outputTokens": 63,
+      "costUSD": 0
+    },
+    {
+      "router": "systemone",
+      "kind": "turn",
+      "caseID": "cli-option-and-flaky-test#17",
+      "label": "small",
+      "proposed": "medium",
+      "applied": "medium",
+      "confidence": 0.2334,
+      "reason": "low-confidence-fallback",
+      "latencyMs": 413,
+      "inputTokens": 1069,
+      "outputTokens": 62,
+      "costUSD": 0
+    },
+    {
+      "router": "systemone",
+      "kind": "turn",
+      "caseID": "cli-option-and-flaky-test#18",
+      "label": "small",
+      "proposed": "medium",
+      "applied": "medium",
+      "confidence": 0.1869,
+      "reason": "low-confidence-fallback",
+      "latencyMs": 407,
+      "inputTokens": 1095,
+      "outputTokens": 63,
+      "costUSD": 0
+    },
+    {
+      "router": "embedding",
+      "kind": "prompt",
+      "caseID": "p01",
+      "label": "small",
+      "proposed": "large",
+      "applied": "large",
+      "confidence": 0.6840990464339567,
+      "reason": "decision",
+      "latencyMs": 109,
+      "inputTokens": 28,
+      "outputTokens": 0,
+      "costUSD": 0
+    },
+    {
+      "router": "embedding",
+      "kind": "prompt",
+      "caseID": "p02",
+      "label": "small",
+      "proposed": "medium",
+      "applied": "medium",
+      "confidence": 0.10225606443228023,
+      "reason": "low-confidence-fallback",
+      "latencyMs": 78,
+      "inputTokens": 37,
+      "outputTokens": 0,
+      "costUSD": 0
+    },
+    {
+      "router": "embedding",
+      "kind": "prompt",
+      "caseID": "p03",
+      "label": "small",
+      "proposed": "small",
+      "applied": "small",
+      "confidence": 0.4297790302565367,
+      "reason": "decision",
+      "latencyMs": 77,
+      "inputTokens": 23,
+      "outputTokens": 0,
+      "costUSD": 0
+    },
+    {
+      "router": "embedding",
+      "kind": "prompt",
+      "caseID": "p04",
+      "label": "small",
+      "proposed": "small",
+      "applied": "medium",
+      "confidence": 0.10959208611727693,
+      "reason": "low-confidence-fallback",
+      "latencyMs": 77,
+      "inputTokens": 29,
+      "outputTokens": 0,
+      "costUSD": 0
+    },
+    {
+      "router": "embedding",
+      "kind": "prompt",
+      "caseID": "p05",
+      "label": "small",
+      "proposed": "large",
+      "applied": "large",
+      "confidence": 0.7040696410714277,
+      "reason": "decision",
+      "latencyMs": 74,
+      "inputTokens": 33,
+      "outputTokens": 0,
+      "costUSD": 0
+    },
+    {
+      "router": "embedding",
+      "kind": "prompt",
+      "caseID": "p06",
+      "label": "small",
+      "proposed": "small",
+      "applied": "small",
+      "confidence": 0.4056407578677725,
+      "reason": "decision",
+      "latencyMs": 83,
+      "inputTokens": 27,
+      "outputTokens": 0,
+      "costUSD": 0
+    },
+    {
+      "router": "embedding",
+      "kind": "prompt",
+      "caseID": "p07",
+      "label": "small",
+      "proposed": "large",
+      "applied": "large",
+      "confidence": 0.7094424242762458,
+      "reason": "decision",
+      "latencyMs": 98,
+      "inputTokens": 36,
+      "outputTokens": 0,
+      "costUSD": 0
+    },
+    {
+      "router": "embedding",
+      "kind": "prompt",
+      "caseID": "p08",
+      "label": "medium",
+      "proposed": "large",
+      "applied": "large",
+      "confidence": 0.6812552741251701,
+      "reason": "decision",
+      "latencyMs": 77,
+      "inputTokens": 33,
+      "outputTokens": 0,
+      "costUSD": 0
+    },
+    {
+      "router": "embedding",
+      "kind": "prompt",
+      "caseID": "p09",
+      "label": "medium",
+      "proposed": "large",
+      "applied": "medium",
+      "confidence": 0.38363278899373027,
+      "reason": "low-confidence-fallback",
+      "latencyMs": 79,
+      "inputTokens": 31,
+      "outputTokens": 0,
+      "costUSD": 0
+    },
+    {
+      "router": "embedding",
+      "kind": "prompt",
+      "caseID": "p10",
+      "label": "medium",
+      "proposed": "small",
+      "applied": "medium",
+      "confidence": 0.11036275677812833,
+      "reason": "low-confidence-fallback",
+      "latencyMs": 85,
+      "inputTokens": 29,
+      "outputTokens": 0,
+      "costUSD": 0
+    },
+    {
+      "router": "embedding",
+      "kind": "prompt",
+      "caseID": "p11",
+      "label": "medium",
+      "proposed": "medium",
+      "applied": "medium",
+      "confidence": 0.16004369344603536,
+      "reason": "low-confidence-fallback",
+      "latencyMs": 89,
+      "inputTokens": 41,
+      "outputTokens": 0,
+      "costUSD": 0
+    },
+    {
+      "router": "embedding",
+      "kind": "prompt",
+      "caseID": "p12",
+      "label": "medium",
+      "proposed": "large",
+      "applied": "large",
+      "confidence": 0.40820849548947596,
+      "reason": "decision",
+      "latencyMs": 80,
+      "inputTokens": 35,
+      "outputTokens": 0,
+      "costUSD": 0
+    },
+    {
+      "router": "embedding",
+      "kind": "prompt",
+      "caseID": "p13",
+      "label": "medium",
+      "proposed": "large",
+      "applied": "large",
+      "confidence": 0.4087630233593411,
+      "reason": "decision",
+      "latencyMs": 79,
+      "inputTokens": 29,
+      "outputTokens": 0,
+      "costUSD": 0
+    },
+    {
+      "router": "embedding",
+      "kind": "prompt",
+      "caseID": "p14",
+      "label": "medium",
+      "proposed": "large",
+      "applied": "medium",
+      "confidence": 0.10690934257791616,
+      "reason": "low-confidence-fallback",
+      "latencyMs": 85,
+      "inputTokens": 35,
+      "outputTokens": 0,
+      "costUSD": 0
+    },
+    {
+      "router": "embedding",
+      "kind": "prompt",
+      "caseID": "p15",
+      "label": "large",
+      "proposed": "large",
+      "applied": "large",
+      "confidence": 0.4089998014414925,
+      "reason": "decision",
+      "latencyMs": 80,
+      "inputTokens": 38,
+      "outputTokens": 0,
+      "costUSD": 0
+    },
+    {
+      "router": "embedding",
+      "kind": "prompt",
+      "caseID": "p16",
+      "label": "large",
+      "proposed": "large",
+      "applied": "large",
+      "confidence": 1,
+      "reason": "decision",
+      "latencyMs": 92,
+      "inputTokens": 43,
+      "outputTokens": 0,
+      "costUSD": 0
+    },
+    {
+      "router": "embedding",
+      "kind": "prompt",
+      "caseID": "p17",
+      "label": "large",
+      "proposed": "large",
+      "applied": "large",
+      "confidence": 1,
+      "reason": "decision",
+      "latencyMs": 77,
+      "inputTokens": 38,
+      "outputTokens": 0,
+      "costUSD": 0
+    },
+    {
+      "router": "embedding",
+      "kind": "prompt",
+      "caseID": "p18",
+      "label": "large",
+      "proposed": "large",
+      "applied": "large",
+      "confidence": 0.6662498003844668,
+      "reason": "decision",
+      "latencyMs": 86,
+      "inputTokens": 36,
+      "outputTokens": 0,
+      "costUSD": 0
+    },
+    {
+      "router": "embedding",
+      "kind": "prompt",
+      "caseID": "p19",
+      "label": "large",
+      "proposed": "large",
+      "applied": "large",
+      "confidence": 1,
+      "reason": "decision",
+      "latencyMs": 82,
+      "inputTokens": 38,
+      "outputTokens": 0,
+      "costUSD": 0
+    },
+    {
+      "router": "embedding",
+      "kind": "prompt",
+      "caseID": "p20",
+      "label": "large",
+      "proposed": "large",
+      "applied": "large",
+      "confidence": 0.7159749294623238,
+      "reason": "decision",
+      "latencyMs": 82,
+      "inputTokens": 47,
+      "outputTokens": 0,
+      "costUSD": 0
+    },
+    {
+      "router": "embedding",
+      "kind": "prompt",
+      "caseID": "p21",
+      "label": "large",
+      "proposed": "large",
+      "applied": "large",
+      "confidence": 1,
+      "reason": "decision",
+      "latencyMs": 81,
+      "inputTokens": 48,
+      "outputTokens": 0,
+      "costUSD": 0
+    },
+    {
+      "router": "embedding",
+      "kind": "turn",
+      "caseID": "cli-option-and-flaky-test#1",
+      "label": "small",
+      "proposed": "large",
+      "applied": "large",
+      "confidence": 0.4051513884579848,
+      "reason": "decision",
+      "latencyMs": 77,
+      "inputTokens": 29,
+      "outputTokens": 0,
+      "costUSD": 0
+    },
+    {
+      "router": "embedding",
+      "kind": "turn",
+      "caseID": "cli-option-and-flaky-test#2",
+      "label": "small",
+      "proposed": "large",
+      "applied": "large",
+      "confidence": 0.7100473872424151,
+      "reason": "decision",
+      "latencyMs": 89,
+      "inputTokens": 69,
+      "outputTokens": 0,
+      "costUSD": 0
+    },
+    {
+      "router": "embedding",
+      "kind": "turn",
+      "caseID": "cli-option-and-flaky-test#3",
+      "label": "medium",
+      "proposed": "large",
+      "applied": "medium",
+      "confidence": 0.36735929289555996,
+      "reason": "low-confidence-fallback",
+      "latencyMs": 89,
+      "inputTokens": 107,
+      "outputTokens": 0,
+      "costUSD": 0
+    },
+    {
+      "router": "embedding",
+      "kind": "turn",
+      "caseID": "cli-option-and-flaky-test#4",
+      "label": "medium",
+      "proposed": "large",
+      "applied": "medium",
+      "confidence": 0.38798833443569575,
+      "reason": "low-confidence-fallback",
+      "latencyMs": 111,
+      "inputTokens": 140,
+      "outputTokens": 0,
+      "costUSD": 0
+    },
+    {
+      "router": "embedding",
+      "kind": "turn",
+      "caseID": "cli-option-and-flaky-test#5",
+      "label": "small",
+      "proposed": "large",
+      "applied": "medium",
+      "confidence": 0.382008840664991,
+      "reason": "low-confidence-fallback",
+      "latencyMs": 107,
+      "inputTokens": 177,
+      "outputTokens": 0,
+      "costUSD": 0
+    },
+    {
+      "router": "embedding",
+      "kind": "turn",
+      "caseID": "cli-option-and-flaky-test#6",
+      "label": "medium",
+      "proposed": "medium",
+      "applied": "medium",
+      "confidence": 0.39881811156492525,
+      "reason": "low-confidence-fallback",
+      "latencyMs": 105,
+      "inputTokens": 218,
+      "outputTokens": 0,
+      "costUSD": 0
+    },
+    {
+      "router": "embedding",
+      "kind": "turn",
+      "caseID": "cli-option-and-flaky-test#7",
+      "label": "small",
+      "proposed": "medium",
+      "applied": "medium",
+      "confidence": 0.39392861875336926,
+      "reason": "low-confidence-fallback",
+      "latencyMs": 112,
+      "inputTokens": 267,
+      "outputTokens": 0,
+      "costUSD": 0
+    },
+    {
+      "router": "embedding",
+      "kind": "turn",
+      "caseID": "cli-option-and-flaky-test#8",
+      "label": "small",
+      "proposed": "medium",
+      "applied": "medium",
+      "confidence": 0.393553653183579,
+      "reason": "low-confidence-fallback",
+      "latencyMs": 102,
+      "inputTokens": 290,
+      "outputTokens": 0,
+      "costUSD": 0
+    },
+    {
+      "router": "embedding",
+      "kind": "turn",
+      "caseID": "cli-option-and-flaky-test#9",
+      "label": "large",
+      "proposed": "large",
+      "applied": "large",
+      "confidence": 0.40946881444809174,
+      "reason": "decision",
+      "latencyMs": 104,
+      "inputTokens": 331,
+      "outputTokens": 0,
+      "costUSD": 0
+    },
+    {
+      "router": "embedding",
+      "kind": "turn",
+      "caseID": "cli-option-and-flaky-test#10",
+      "label": "medium",
+      "proposed": "large",
+      "applied": "large",
+      "confidence": 0.6965181347770486,
+      "reason": "decision",
+      "latencyMs": 110,
+      "inputTokens": 370,
+      "outputTokens": 0,
+      "costUSD": 0
+    },
+    {
+      "router": "embedding",
+      "kind": "turn",
+      "caseID": "cli-option-and-flaky-test#11",
+      "label": "large",
+      "proposed": "large",
+      "applied": "large",
+      "confidence": 0.7062185115421377,
+      "reason": "decision",
+      "latencyMs": 132,
+      "inputTokens": 432,
+      "outputTokens": 0,
+      "costUSD": 0
+    },
+    {
+      "router": "embedding",
+      "kind": "turn",
+      "caseID": "cli-option-and-flaky-test#12",
+      "label": "medium",
+      "proposed": "large",
+      "applied": "large",
+      "confidence": 0.6994288835152401,
+      "reason": "decision",
+      "latencyMs": 111,
+      "inputTokens": 484,
+      "outputTokens": 0,
+      "costUSD": 0
+    },
+    {
+      "router": "embedding",
+      "kind": "turn",
+      "caseID": "cli-option-and-flaky-test#13",
+      "label": "small",
+      "proposed": "large",
+      "applied": "large",
+      "confidence": 0.700612298563089,
+      "reason": "decision",
+      "latencyMs": 135,
+      "inputTokens": 519,
+      "outputTokens": 0,
+      "costUSD": 0
+    },
+    {
+      "router": "embedding",
+      "kind": "turn",
+      "caseID": "cli-option-and-flaky-test#14",
+      "label": "small",
+      "proposed": "large",
+      "applied": "large",
+      "confidence": 0.42255701874136775,
+      "reason": "decision",
+      "latencyMs": 117,
+      "inputTokens": 549,
+      "outputTokens": 0,
+      "costUSD": 0
+    },
+    {
+      "router": "embedding",
+      "kind": "turn",
+      "caseID": "cli-option-and-flaky-test#15",
+      "label": "large",
+      "proposed": "large",
+      "applied": "large",
+      "confidence": 0.7185430690897321,
+      "reason": "decision",
+      "latencyMs": 128,
+      "inputTokens": 604,
+      "outputTokens": 0,
+      "costUSD": 0
+    },
+    {
+      "router": "embedding",
+      "kind": "turn",
+      "caseID": "cli-option-and-flaky-test#16",
+      "label": "medium",
+      "proposed": "large",
+      "applied": "large",
+      "confidence": 0.7165197882127011,
+      "reason": "decision",
+      "latencyMs": 129,
+      "inputTokens": 648,
+      "outputTokens": 0,
+      "costUSD": 0
+    },
+    {
+      "router": "embedding",
+      "kind": "turn",
+      "caseID": "cli-option-and-flaky-test#17",
+      "label": "small",
+      "proposed": "large",
+      "applied": "large",
+      "confidence": 1,
+      "reason": "decision",
+      "latencyMs": 129,
+      "inputTokens": 692,
+      "outputTokens": 0,
+      "costUSD": 0
+    },
+    {
+      "router": "embedding",
+      "kind": "turn",
+      "caseID": "cli-option-and-flaky-test#18",
+      "label": "small",
+      "proposed": "large",
+      "applied": "large",
+      "confidence": 1,
+      "reason": "decision",
+      "latencyMs": 131,
+      "inputTokens": 709,
+      "outputTokens": 0,
+      "costUSD": 0
+    },
+    {
+      "router": "llm",
+      "kind": "prompt",
+      "caseID": "p01",
+      "label": "small",
+      "proposed": "small",
+      "applied": "small",
+      "confidence": 0.98,
+      "reason": "decision",
+      "latencyMs": 275,
+      "inputTokens": 259,
+      "outputTokens": 20,
+      "costUSD": 0
+    },
+    {
+      "router": "llm",
+      "kind": "prompt",
+      "caseID": "p02",
+      "label": "small",
+      "proposed": "small",
+      "applied": "small",
+      "confidence": 0.95,
+      "reason": "decision",
+      "latencyMs": 163,
+      "inputTokens": 268,
+      "outputTokens": 20,
+      "costUSD": 0
+    },
+    {
+      "router": "llm",
+      "kind": "prompt",
+      "caseID": "p03",
+      "label": "small",
+      "proposed": "small",
+      "applied": "small",
+      "confidence": 0.95,
+      "reason": "decision",
+      "latencyMs": 147,
+      "inputTokens": 255,
+      "outputTokens": 20,
+      "costUSD": 0
+    },
+    {
+      "router": "llm",
+      "kind": "prompt",
+      "caseID": "p04",
+      "label": "small",
+      "proposed": "small",
+      "applied": "small",
+      "confidence": 0.95,
+      "reason": "decision",
+      "latencyMs": 139,
+      "inputTokens": 260,
+      "outputTokens": 20,
+      "costUSD": 0
+    },
+    {
+      "router": "llm",
+      "kind": "prompt",
+      "caseID": "p05",
+      "label": "small",
+      "proposed": "small",
+      "applied": "small",
+      "confidence": 0.98,
+      "reason": "decision",
+      "latencyMs": 149,
+      "inputTokens": 264,
+      "outputTokens": 20,
+      "costUSD": 0
+    },
+    {
+      "router": "llm",
+      "kind": "prompt",
+      "caseID": "p06",
+      "label": "small",
+      "proposed": "small",
+      "applied": "small",
+      "confidence": 0.95,
+      "reason": "decision",
+      "latencyMs": 165,
+      "inputTokens": 258,
+      "outputTokens": 20,
+      "costUSD": 0
+    },
+    {
+      "router": "llm",
+      "kind": "prompt",
+      "caseID": "p07",
+      "label": "small",
+      "proposed": "small",
+      "applied": "small",
+      "confidence": 0.95,
+      "reason": "decision",
+      "latencyMs": 163,
+      "inputTokens": 267,
+      "outputTokens": 20,
+      "costUSD": 0
+    },
+    {
+      "router": "llm",
+      "kind": "prompt",
+      "caseID": "p08",
+      "label": "medium",
+      "proposed": "small",
+      "applied": "small",
+      "confidence": 0.95,
+      "reason": "decision",
+      "latencyMs": 144,
+      "inputTokens": 264,
+      "outputTokens": 20,
+      "costUSD": 0
+    },
+    {
+      "router": "llm",
+      "kind": "prompt",
+      "caseID": "p09",
+      "label": "medium",
+      "proposed": "small",
+      "applied": "small",
+      "confidence": 0.95,
+      "reason": "decision",
+      "latencyMs": 139,
+      "inputTokens": 262,
+      "outputTokens": 20,
+      "costUSD": 0
+    },
+    {
+      "router": "llm",
+      "kind": "prompt",
+      "caseID": "p10",
+      "label": "medium",
+      "proposed": "small",
+      "applied": "small",
+      "confidence": 0.95,
+      "reason": "decision",
+      "latencyMs": 153,
+      "inputTokens": 260,
+      "outputTokens": 20,
+      "costUSD": 0
+    },
+    {
+      "router": "llm",
+      "kind": "prompt",
+      "caseID": "p11",
+      "label": "medium",
+      "proposed": "medium",
+      "applied": "medium",
+      "confidence": 0.95,
+      "reason": "decision",
+      "latencyMs": 158,
+      "inputTokens": 272,
+      "outputTokens": 20,
+      "costUSD": 0
+    },
+    {
+      "router": "llm",
+      "kind": "prompt",
+      "caseID": "p12",
+      "label": "medium",
+      "proposed": "medium",
+      "applied": "medium",
+      "confidence": 0.95,
+      "reason": "decision",
+      "latencyMs": 152,
+      "inputTokens": 266,
+      "outputTokens": 20,
+      "costUSD": 0
+    },
+    {
+      "router": "llm",
+      "kind": "prompt",
+      "caseID": "p13",
+      "label": "medium",
+      "proposed": "medium",
+      "applied": "medium",
+      "confidence": 0.95,
+      "reason": "decision",
+      "latencyMs": 148,
+      "inputTokens": 260,
+      "outputTokens": 20,
+      "costUSD": 0
+    },
+    {
+      "router": "llm",
+      "kind": "prompt",
+      "caseID": "p14",
+      "label": "medium",
+      "proposed": "medium",
+      "applied": "medium",
+      "confidence": 0.95,
+      "reason": "decision",
+      "latencyMs": 147,
+      "inputTokens": 266,
+      "outputTokens": 20,
+      "costUSD": 0
+    },
+    {
+      "router": "llm",
+      "kind": "prompt",
+      "caseID": "p15",
+      "label": "large",
+      "proposed": "large",
+      "applied": "large",
+      "confidence": 0.95,
+      "reason": "decision",
+      "latencyMs": 140,
+      "inputTokens": 269,
+      "outputTokens": 20,
+      "costUSD": 0
+    },
+    {
+      "router": "llm",
+      "kind": "prompt",
+      "caseID": "p16",
+      "label": "large",
+      "proposed": "small",
+      "applied": "small",
+      "confidence": 0.95,
+      "reason": "decision",
+      "latencyMs": 148,
+      "inputTokens": 274,
+      "outputTokens": 20,
+      "costUSD": 0
+    },
+    {
+      "router": "llm",
+      "kind": "prompt",
+      "caseID": "p17",
+      "label": "large",
+      "proposed": "large",
+      "applied": "large",
+      "confidence": 0.9,
+      "reason": "decision",
+      "latencyMs": 137,
+      "inputTokens": 269,
+      "outputTokens": 19,
+      "costUSD": 0
+    },
+    {
+      "router": "llm",
+      "kind": "prompt",
+      "caseID": "p18",
+      "label": "large",
+      "proposed": "large",
+      "applied": "large",
+      "confidence": 0.95,
+      "reason": "decision",
+      "latencyMs": 148,
+      "inputTokens": 267,
+      "outputTokens": 20,
+      "costUSD": 0
+    },
+    {
+      "router": "llm",
+      "kind": "prompt",
+      "caseID": "p19",
+      "label": "large",
+      "proposed": "large",
+      "applied": "large",
+      "confidence": 0.95,
+      "reason": "decision",
+      "latencyMs": 154,
+      "inputTokens": 269,
+      "outputTokens": 20,
+      "costUSD": 0
+    },
+    {
+      "router": "llm",
+      "kind": "prompt",
+      "caseID": "p20",
+      "label": "large",
+      "proposed": "medium",
+      "applied": "medium",
+      "confidence": 0.9,
+      "reason": "decision",
+      "latencyMs": 171,
+      "inputTokens": 278,
+      "outputTokens": 19,
+      "costUSD": 0
+    },
+    {
+      "router": "llm",
+      "kind": "prompt",
+      "caseID": "p21",
+      "label": "large",
+      "proposed": "large",
+      "applied": "large",
+      "confidence": 0.95,
+      "reason": "decision",
+      "latencyMs": 176,
+      "inputTokens": 279,
+      "outputTokens": 20,
+      "costUSD": 0
+    },
+    {
+      "router": "llm",
+      "kind": "turn",
+      "caseID": "cli-option-and-flaky-test#1",
+      "label": "small",
+      "proposed": "small",
+      "applied": "small",
+      "confidence": 0.95,
+      "reason": "decision",
+      "latencyMs": 135,
+      "inputTokens": 260,
+      "outputTokens": 20,
+      "costUSD": 0
+    },
+    {
+      "router": "llm",
+      "kind": "turn",
+      "caseID": "cli-option-and-flaky-test#2",
+      "label": "small",
+      "proposed": "small",
+      "applied": "small",
+      "confidence": 0.95,
+      "reason": "decision",
+      "latencyMs": 188,
+      "inputTokens": 304,
+      "outputTokens": 20,
+      "costUSD": 0
+    },
+    {
+      "router": "llm",
+      "kind": "turn",
+      "caseID": "cli-option-and-flaky-test#3",
+      "label": "medium",
+      "proposed": "small",
+      "applied": "small",
+      "confidence": 0.95,
+      "reason": "decision",
+      "latencyMs": 200,
+      "inputTokens": 350,
+      "outputTokens": 20,
+      "costUSD": 0
+    },
+    {
+      "router": "llm",
+      "kind": "turn",
+      "caseID": "cli-option-and-flaky-test#4",
+      "label": "medium",
+      "proposed": "small",
+      "applied": "small",
+      "confidence": 0.95,
+      "reason": "decision",
+      "latencyMs": 204,
+      "inputTokens": 391,
+      "outputTokens": 20,
+      "costUSD": 0
+    },
+    {
+      "router": "llm",
+      "kind": "turn",
+      "caseID": "cli-option-and-flaky-test#5",
+      "label": "small",
+      "proposed": "small",
+      "applied": "small",
+      "confidence": 0.95,
+      "reason": "decision",
+      "latencyMs": 201,
+      "inputTokens": 436,
+      "outputTokens": 20,
+      "costUSD": 0
+    },
+    {
+      "router": "llm",
+      "kind": "turn",
+      "caseID": "cli-option-and-flaky-test#6",
+      "label": "medium",
+      "proposed": "medium",
+      "applied": "medium",
+      "confidence": 0.95,
+      "reason": "decision",
+      "latencyMs": 201,
+      "inputTokens": 484,
+      "outputTokens": 20,
+      "costUSD": 0
+    },
+    {
+      "router": "llm",
+      "kind": "turn",
+      "caseID": "cli-option-and-flaky-test#7",
+      "label": "small",
+      "proposed": "small",
+      "applied": "small",
+      "confidence": 0.95,
+      "reason": "decision",
+      "latencyMs": 206,
+      "inputTokens": 541,
+      "outputTokens": 20,
+      "costUSD": 0
+    },
+    {
+      "router": "llm",
+      "kind": "turn",
+      "caseID": "cli-option-and-flaky-test#8",
+      "label": "small",
+      "proposed": "small",
+      "applied": "small",
+      "confidence": 0.95,
+      "reason": "decision",
+      "latencyMs": 533,
+      "inputTokens": 572,
+      "outputTokens": 20,
+      "costUSD": 0
+    },
+    {
+      "router": "llm",
+      "kind": "turn",
+      "caseID": "cli-option-and-flaky-test#9",
+      "label": "large",
+      "proposed": "large",
+      "applied": "large",
+      "confidence": 0.95,
+      "reason": "decision",
+      "latencyMs": 230,
+      "inputTokens": 622,
+      "outputTokens": 20,
+      "costUSD": 0
+    },
+    {
+      "router": "llm",
+      "kind": "turn",
+      "caseID": "cli-option-and-flaky-test#10",
+      "label": "medium",
+      "proposed": "large",
+      "applied": "large",
+      "confidence": 0.95,
+      "reason": "decision",
+      "latencyMs": 216,
+      "inputTokens": 669,
+      "outputTokens": 20,
+      "costUSD": 0
+    },
+    {
+      "router": "llm",
+      "kind": "turn",
+      "caseID": "cli-option-and-flaky-test#11",
+      "label": "large",
+      "proposed": "large",
+      "applied": "large",
+      "confidence": 0.95,
+      "reason": "decision",
+      "latencyMs": 267,
+      "inputTokens": 739,
+      "outputTokens": 20,
+      "costUSD": 0
+    },
+    {
+      "router": "llm",
+      "kind": "turn",
+      "caseID": "cli-option-and-flaky-test#12",
+      "label": "medium",
+      "proposed": "large",
+      "applied": "large",
+      "confidence": 0.95,
+      "reason": "decision",
+      "latencyMs": 269,
+      "inputTokens": 799,
+      "outputTokens": 20,
+      "costUSD": 0
+    },
+    {
+      "router": "llm",
+      "kind": "turn",
+      "caseID": "cli-option-and-flaky-test#13",
+      "label": "small",
+      "proposed": "medium",
+      "applied": "medium",
+      "confidence": 0.95,
+      "reason": "decision",
+      "latencyMs": 254,
+      "inputTokens": 842,
+      "outputTokens": 20,
+      "costUSD": 0
+    },
+    {
+      "router": "llm",
+      "kind": "turn",
+      "caseID": "cli-option-and-flaky-test#14",
+      "label": "small",
+      "proposed": "small",
+      "applied": "small",
+      "confidence": 0.95,
+      "reason": "decision",
+      "latencyMs": 217,
+      "inputTokens": 879,
+      "outputTokens": 20,
+      "costUSD": 0
+    },
+    {
+      "router": "llm",
+      "kind": "turn",
+      "caseID": "cli-option-and-flaky-test#15",
+      "label": "large",
+      "proposed": "large",
+      "applied": "large",
+      "confidence": 0.95,
+      "reason": "decision",
+      "latencyMs": 240,
+      "inputTokens": 942,
+      "outputTokens": 20,
+      "costUSD": 0
+    },
+    {
+      "router": "llm",
+      "kind": "turn",
+      "caseID": "cli-option-and-flaky-test#16",
+      "label": "medium",
+      "proposed": "large",
+      "applied": "large",
+      "confidence": 0.95,
+      "reason": "decision",
+      "latencyMs": 239,
+      "inputTokens": 994,
+      "outputTokens": 20,
+      "costUSD": 0
+    },
+    {
+      "router": "llm",
+      "kind": "turn",
+      "caseID": "cli-option-and-flaky-test#17",
+      "label": "small",
+      "proposed": "small",
+      "applied": "small",
+      "confidence": 0.95,
+      "reason": "decision",
+      "latencyMs": 266,
+      "inputTokens": 1045,
+      "outputTokens": 20,
+      "costUSD": 0
+    },
+    {
+      "router": "llm",
+      "kind": "turn",
+      "caseID": "cli-option-and-flaky-test#18",
+      "label": "small",
+      "proposed": "small",
+      "applied": "small",
+      "confidence": 0.95,
+      "reason": "decision",
+      "latencyMs": 228,
+      "inputTokens": 1069,
+      "outputTokens": 20,
+      "costUSD": 0
+    }
+  ]
+}
