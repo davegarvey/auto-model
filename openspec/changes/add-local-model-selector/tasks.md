@@ -28,9 +28,9 @@
 
 ## 5. Baselines
 
-- [ ] 5.1 Write `data/router-examples.jsonl`, about 10 labelled examples per tier, for the user to review. Verify that the user has approved them and that a check script finds no overlap with the evaluation data.
-- [ ] 5.2 Implement the embedding router (Ollama `embeddinggemma`, cosine k-nearest neighbours with k = 5, weighted vote confidence). Verify with a unit test using stubbed embeddings, and with `route-once` using `--router embedding`.
-- [ ] 5.3 Implement the small-LLM router (`gemma4:e2b-mlx`, JSON-schema `format`, thinking off, malformed-output handling). Verify with a unit test for malformed output, and with `route-once` using `--router llm`.
+- [x] 5.1 Write `data/router-examples.jsonl`, about 10 labelled examples per tier, for the user to review. Verify that the user has approved them and that a check script finds no overlap with the evaluation data.
+- [x] 5.2 Implement the embedding router (Ollama `embeddinggemma`, cosine k-nearest neighbours with k = 5, weighted vote confidence). Verify with a unit test using stubbed embeddings, and with `route-once` using `--router embedding`.
+- [x] 5.3 Implement the small-LLM router (`gemma4:e2b-mlx`, JSON-schema `format`, thinking off, malformed-output handling). Verify with a unit test for malformed output, and with `route-once` using `--router llm`.
 
 ## 6. Evaluation dataset
 

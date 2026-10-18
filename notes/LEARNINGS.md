@@ -37,6 +37,23 @@ In a session whose history was a hard deadlock analysis, Kev proposed `large` ev
 A server-side OpenCode plugin can register a `/auto-model` command, but its only way to reply is a synthetic message. OpenCode queues that message and delivers it with the next turn, so the model reads it as well. The plugin's per-session state (current tier, manual override) is also in memory and resets whenever OpenCode reloads the plugin.
 - **Why it matters:** an automatic selector needs a visible, out-of-band channel ("switched to large because …") and durable state. Neither comes for free from today's agent plugin APIs.
 
+### 16. Embedding routers have short memories by construction (2026-10-18)
+EmbeddingGemma, a typical small local embedding model, reads 2,048 tokens and silently truncates the rest: a 6,000-word input reported exactly 2,048 tokens read, with no error. Serialised in the natural order, a multi-turn state would lose the latest message, the part that matters most. The baseline therefore embeds the same state newest first, so truncation drops the oldest turns, and it flags truncation in the decision log.
+- **Why it matters:** this is a structural reason, not just an empirical one, behind the claim that embedding routers struggle with long sessions. Their window is a quarter of Kev's validated context. The evaluation compares them on equal content, but not on equal reach.
+
+### 17. Every router speaks a different confidence dialect (2026-10-18)
+On the same three prompts, all three routers chose the expected tiers. Their confidences differed widely:
+- the small LLM reported 0.90–0.95 every time;
+- Kev reported 0.31–0.59, so two of three fell back under the 0.4 threshold;
+- the embedding router reported anything from 0.36 to 1.00.
+
+The small LLM (Gemma 4 E2B, thinking off, JSON output) took about 185 ms per decision once loaded, as fast as Kev on short states.
+- **Why it matters:** a single fallback threshold cannot be fair to all routers, so the evaluation sweeps it per router. A text-generating router is not inherently slow when it is small, local and constrained to a one-token-ish JSON answer. The thesis's cost argument has to be tested on long states, not assumed.
+
+### 18. The "right" tier is often a judgement call, even for the person labelling (2026-10-18)
+Reviewing the router examples, the user agreed at once on most of them but found one genuinely two-sided: "refactor the payment flow so every external call is idempotent, about 40 files". It is large in scope and needs a large context. It is also largely mechanical work on existing code, which suggests medium. The example was replaced with an unambiguous one.
+- **Why it matters:** routers are scored against one person's labels, and some prompts have no single correct tier. Agreement figures have a ceiling below 100%, and a disagreement is not always a routing error. The difficulty also splits along two axes, reasoning depth and context size, which a single small/medium/large ladder conflates.
+
 ## Tiers, reasoning levels and switching cost
 
 ### 4. "Reasoning effort" is often just on or off (2026-10-18)
