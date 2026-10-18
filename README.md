@@ -4,6 +4,25 @@ An experiment in automatic model selection for a coding agent. Before each turn 
 
 The repository accompanies a blog post arguing that manual model selection will go the way of the manual gearbox. It is a small, honest experiment, not a product. Findings are recorded as they happen in [`notes/LEARNINGS.md`](notes/LEARNINGS.md).
 
+## Results
+
+The write-up, [`WRITEUP.md`](WRITEUP.md), summarises what the experiment found. In brief:
+- Kev chose the labelled tier for 30 of 39 clear-cut cases.
+- A small general model did about as well.
+- The embedding baseline did poorly.
+- Switching between tiers costs anything from 40 ms to over a minute, depending on the models.
+
+The raw results are in [`results/`](results/):
+
+| Directory | Contents |
+|---|---|
+| `2026-10-18-a91a874` | Routing evaluation at the original threshold of 0.4 |
+| `2026-10-18-cb379e3` | Routing evaluation at the tuned threshold of 0.1 |
+| `2026-10-18-switch-cost` | Switching cost benchmark |
+| `2026-10-18-live` | Decision log of a live OpenCode session |
+
+Every decision is in the `decisions.jsonl` files.
+
 ## How it works
 
 ```
@@ -90,8 +109,8 @@ For scripted runs, use `scripts/oc-run.sh` (the same arguments as `opencode run`
 | `defaultTier` | `medium` | Used on low confidence or when the router is unavailable with no current tier |
 | `router` | `systemone` | `systemone` (Kev), `embedding` or `llm` (the baselines) |
 | `systemOne` | `localhost:8009`, 30 s timeout | Any `/v1/systemone` server, including TypeSafe's Jev |
-| `policy.threshold` | 0.4 | Below this confidence, apply the default tier |
-| `policy.margin` | 0.15 | Leave the current tier only if the proposed tier's probability leads by at least this |
+| `policy.threshold` | 0.1 | Below this confidence, apply the default tier. Set from the evaluation's sweep; Kev's confidence runs low by design |
+| `policy.margin` | 0 | Leave the current tier only if the proposed tier's probability leads by at least this. 0 disables hysteresis, which lowered agreement in the evaluation |
 | `state.budgetTokens` | 8192 | Routing state size; Kev-4B is validated up to 8,192 tokens |
 
 ## Known issues
