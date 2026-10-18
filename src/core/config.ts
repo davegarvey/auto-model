@@ -24,7 +24,8 @@ export interface Config {
   systemOne: { baseURL: string; model: string; timeoutMs: number; pricePerMTok: number }
   /** Hosted Jev. The key is read from the environment variable named by apiKeyEnv, never from this file. */
   jev: { baseURL: string; path: string; model: string; apiKeyEnv: string; timeoutMs: number; pricePerMTok: number }
-  embedding: { baseURL: string; model: string; examples: string; k: number; timeoutMs: number }
+  /** input: "state" embeds the whole routing state; "latest" embeds only the latest message. */
+  embedding: { baseURL: string; model: string; examples: string; k: number; timeoutMs: number; input: "state" | "latest" }
   llm: { baseURL: string; model: string; timeoutMs: number }
   policy: { threshold: number; margin: number }
   state: { budgetTokens: number }
@@ -60,6 +61,7 @@ const DEFAULTS = {
     examples: "data/router-examples.jsonl",
     k: 5,
     timeoutMs: 30000,
+    input: "state" as "state" | "latest",
   },
   llm: { baseURL: "http://localhost:11434", model: "gemma4:e2b-mlx", timeoutMs: 30000 },
   policy: { threshold: 0.4, margin: 0.15 },
@@ -146,6 +148,8 @@ export function parseConfig(input: unknown, baseDir = process.cwd()): Config {
   inRange(config.embedding.timeoutMs, 1, 600000, "embedding.timeoutMs")
   inRange(config.llm.timeoutMs, 1, 600000, "llm.timeoutMs")
   inRange(config.embedding.k, 1, 100, "embedding.k")
+  if (config.embedding.input !== "state" && config.embedding.input !== "latest")
+    throw new ConfigError("invalid-field", `"embedding.input" must be "state" or "latest"`)
   inRange(config.systemOne.pricePerMTok, 0, 1000, "systemOne.pricePerMTok")
   inRange(config.jev.timeoutMs, 1, 600000, "jev.timeoutMs")
   inRange(config.jev.pricePerMTok, 0, 1000, "jev.pricePerMTok")

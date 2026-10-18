@@ -31,7 +31,14 @@
     "timeoutMs": 30000,
     "pricePerMTok": 0.084
   },
-  "embedding": { "baseURL": "http://localhost:11434", "model": "embeddinggemma", "examples": "data/router-examples.jsonl", "k": 5, "timeoutMs": 30000 },
+  "embedding": {
+    "baseURL": "http://localhost:11434",
+    "model": "embeddinggemma",
+    "examples": "data/router-examples.jsonl",
+    "k": 5,
+    "input": "state",
+    "timeoutMs": 30000
+  },
   "llm": { "baseURL": "http://localhost:11434", "model": "gemma4:e2b-mlx", "timeoutMs": 30000 },
   "policy": { "threshold": 0.1, "margin": 0 },
   "state": { "budgetTokens": 8192 },

@@ -80,3 +80,10 @@ test("malformed fields are rejected with the broken rule", () => {
     "invalid-tier",
   )
 })
+
+test("embedding.input must be state or latest, defaulting to state", () => {
+  const base = { tiers: [{ id: "a", description: "A", model: "x/a" }, { id: "b", description: "B", model: "x/b" }], defaultTier: "a" }
+  assert.equal(parseConfig(base, "/").embedding.input, "state")
+  assert.equal(parseConfig({ ...base, embedding: { input: "latest" } }, "/").embedding.input, "latest")
+  assert.throws(() => parseConfig({ ...base, embedding: { input: "everything" } }, "/"), /embedding.input/)
+})

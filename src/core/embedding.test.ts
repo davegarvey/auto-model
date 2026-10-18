@@ -6,7 +6,7 @@ import { tmpdir } from "node:os"
 import path from "node:path"
 import { after, test } from "node:test"
 import type { Tier } from "./config.ts"
-import { embeddingRouter, embeddingText } from "./embedding.ts"
+import { embeddingRouter, embeddingText, latestMessageText } from "./embedding.ts"
 import { buildState } from "./state.ts"
 
 const menu: Tier[] = [
@@ -84,4 +84,14 @@ test("input that fills the embedding model's context is flagged as truncated", a
   const long = embeddingRouter({ baseURL, model: "stub-embed", examples, k: 3, timeoutMs: 2000, contextTokens: 50 })
   const result = await long.route(menu, state("tiny " + "x".repeat(400)))
   assert.equal(result.inputTruncated, true)
+})
+
+test("the latest-message variant embeds only the message being routed, prefixed like the examples", async () => {
+  const latest = embeddingRouter({ baseURL, model: "stub-embed", examples, k: 3, timeoutMs: 2000, input: "latest" })
+  const s = state("now fix it", [{ from: "user", text: "gnarly gnarly gnarly race condition" }])
+  await latest.route(menu, s)
+  assert.equal(latest.name, "embedding-latest")
+  assert.equal(lastInputs[0], "task: classification | query: now fix it")
+  assert.equal(lastInputs[0], latestMessageText(s))
+  assert.equal(router.name, "embedding", "the full-state default is unchanged")
 })

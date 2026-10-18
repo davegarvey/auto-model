@@ -13,6 +13,8 @@ export interface EmbeddingOptions {
   timeoutMs: number
   /** The embedding model's context, in tokens; inputs that use all of it were probably cut short. */
   contextTokens?: number
+  /** What to embed: the whole routing state (default), or only the latest message, like the examples. */
+  input?: "state" | "latest"
 }
 
 interface Example {
@@ -37,6 +39,9 @@ export function embeddingText(state: RoutingState): string {
   ]
   return PREFIX + parts.join("\n")
 }
+
+/** Only the message being routed, with the same prefix as the examples, so like is compared with like. */
+export const latestMessageText = (state: RoutingState) => PREFIX + state.value.latest_message
 
 const cosine = (a: number[], b: number[]) => {
   let dot = 0
@@ -81,13 +86,14 @@ export function embeddingRouter(options: EmbeddingOptions): Router {
       throw error
     }))
 
+  const text = options.input === "latest" ? latestMessageText : embeddingText
   return {
-    name: "embedding",
+    name: options.input === "latest" ? "embedding-latest" : "embedding",
     model: options.model,
     async route(menu, state) {
       const labelled = await loadExamples(menu)
       const started = performance.now()
-      const { vectors, tokens } = await embed([embeddingText(state)])
+      const { vectors, tokens } = await embed([text(state)])
       const query = vectors[0]
 
       const nearest = labelled
