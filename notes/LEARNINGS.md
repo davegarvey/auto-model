@@ -58,6 +58,10 @@ Reviewing the router examples, the user agreed at once on most of them but found
 In the first end-to-end evaluation run, the embedding router failed every call. Loading `embeddinggemma` cold takes about 7.8 s, longer than the router's 5 s timeout. Each timed-out request was abandoned before the model finished loading, so the next request started cold again. The timeouts are now 30 s for all routers, and the evaluation warms each router up, unrecorded, before measuring.
 - **Why it matters:** in a local set-up, the router's model shares a server that loads and evicts models on demand. A routing layer needs warm-up and generous timeouts, or it fails in a way that looks like "the router is bad" rather than "the router never ran". The decision log's `endpoint-error` reason is what made this visible.
 
+### 21. The evaluation prompts were written to be unambiguous, so agreement is a best case (2026-10-18)
+The 21 single prompts in `data/eval/prompts.jsonl` (7 per tier) were drafted by the assistant, not taken from real use, and written to sit clearly inside one tier. Four first drafts that could reasonably go either way were replaced rather than labelled. The user chose not to make judgement calls on individual labels.
+- **Why it matters:** agreement on these prompts measures whether a router can tell clear cases apart, not how it handles the grey zone that entry 18 showed real requests contain. Read the single-prompt figures as an upper bound. The multi-turn session, where follow-ups inherit difficulty from context, is the harder and more realistic test.
+
 ## Tiers, reasoning levels and switching cost
 
 ### 4. "Reasoning effort" is often just on or off (2026-10-18)

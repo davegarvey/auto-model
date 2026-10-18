@@ -1,0 +1,21 @@
+{"id": "p01", "label": "small", "text": "What's the difference between git fetch and git pull?"}
+{"id": "p02", "label": "small", "text": "Change the default port in server.ts from 3000 to 8080."}
+{"id": "p03", "label": "small", "text": "List every TODO comment under src/."}
+{"id": "p04", "label": "small", "text": "Bump lodash to the latest patch version in package.json."}
+{"id": "p05", "label": "small", "text": "What does set -euo pipefail do at the top of a shell script?"}
+{"id": "p06", "label": "small", "text": "Remove the unused import of path from build.js."}
+{"id": "p07", "label": "small", "text": "Convert the Unix timestamp 1760774400 to a UTC date."}
+{"id": "p08", "label": "medium", "text": "Add a /health endpoint that returns the app version and whether the database is reachable."}
+{"id": "p09", "label": "medium", "text": "Write a script that reads users.csv and prints JSON grouped by country."}
+{"id": "p10", "label": "medium", "text": "Add dark mode to the settings page using the existing theme tokens."}
+{"id": "p11", "label": "medium", "text": "Add a date-of-birth field to the signup form, with validation that the user is at least 18."}
+{"id": "p12", "label": "medium", "text": "Move the email-sending code out of the order controller into its own module, with tests."}
+{"id": "p13", "label": "medium", "text": "Limit the login route to five attempts per minute per IP address."}
+{"id": "p14", "label": "medium", "text": "Replace moment.js with date-fns in the reports module and keep the existing tests passing."}
+{"id": "p15", "label": "large", "text": "When two people edit the same document at once, one person's changes sometimes disappear. Design a fix."}
+{"id": "p16", "label": "large", "text": "Search results can stay stale for up to an hour after an update, yet the cache TTL is five minutes. How is that possible?"}
+{"id": "p17", "label": "large", "text": "Should the mobile app's API move from REST to GraphQL? Weigh the benefits against the cost of migrating."}
+{"id": "p18", "label": "large", "text": "The integration tests pass one at a time but fail when run in parallel. Find the shared state."}
+{"id": "p19", "label": "large", "text": "Plan a zero-downtime rename of a column on a table with 200 million rows."}
+{"id": "p20", "label": "large", "text": "The nightly report's total is a few pence off the sum of its rows, but only on some nights. Work out where the discrepancy comes from."}
+{"id": "p21", "label": "large", "text": "Design a permissions model for a multi-tenant app where a user can belong to several organisations with different roles, including how to migrate existing single-tenant data."}
