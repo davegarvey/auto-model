@@ -239,8 +239,8 @@ export function contextText(root: string, minChars: number): { text: string; sou
     if (text.length >= minChars) return { text, source: "recorded evaluation sessions" }
   }
   const docs = [
-    "openspec/changes/add-local-model-selector/design.md",
-    "openspec/changes/add-local-model-selector/proposal.md",
+    "openspec/changes/archive/2026-10-18-add-local-model-selector/design.md",
+    "openspec/changes/archive/2026-10-18-add-local-model-selector/proposal.md",
     "notes/LEARNINGS.md",
     "README.md",
     "src/core/state.ts",
