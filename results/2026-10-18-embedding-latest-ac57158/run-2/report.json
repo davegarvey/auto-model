@@ -1,0 +1,867 @@
+{
+  "meta": {
+    "date": "2026-10-18T18:27:07.663Z",
+    "commit": "ac57158",
+    "datasetRevision": "ad716c3",
+    "dataset": {
+      "prompts": 21,
+      "sessions": 1,
+      "turns": 18
+    },
+    "config": {
+      "enabled": true,
+      "tiers": [
+        {
+          "id": "small",
+          "description": "Quick, low-stakes requests that need little reasoning: answering a factual question about the code, explaining a short snippet, renaming or reformatting, a one-line fix, running a command and reporting the result.",
+          "model": "ollama/gemma4:e2b-mlx",
+          "variant": "none"
+        },
+        {
+          "id": "medium",
+          "description": "Typical coding work: implementing a well-specified feature, editing several files, writing tests, routine debugging with a clear error message, continuing a task that is already under way.",
+          "model": "ollama/qwen3.6:35b-mlx",
+          "variant": "none"
+        },
+        {
+          "id": "large",
+          "description": "Hard problems that need careful step-by-step reasoning: diagnosing a subtle or intermittent bug, designing an architecture or algorithm, weighing trade-offs, large refactors, or a previous attempt that has failed.",
+          "model": "ollama/qwen3.6:35b-mlx",
+          "variant": "high"
+        }
+      ],
+      "defaultTier": "medium",
+      "router": "systemone",
+      "systemOne": {
+        "baseURL": "http://localhost:8009",
+        "model": "kev-latest",
+        "timeoutMs": 30000,
+        "pricePerMTok": 0
+      },
+      "jev": {
+        "baseURL": "https://api.defapi.org",
+        "path": "/api/v1/decisions",
+        "model": "typesafe/jev-1.13",
+        "apiKeyEnv": "DEFAPI_API_KEY",
+        "timeoutMs": 30000,
+        "pricePerMTok": 0.084
+      },
+      "embedding": {
+        "baseURL": "http://localhost:11434",
+        "model": "embeddinggemma",
+        "examples": "data/router-examples.jsonl",
+        "k": 5,
+        "timeoutMs": 30000,
+        "input": "latest"
+      },
+      "llm": {
+        "baseURL": "http://localhost:11434",
+        "model": "gemma4:e2b-mlx",
+        "timeoutMs": 30000
+      },
+      "policy": {
+        "threshold": 0.1,
+        "margin": 0.15
+      },
+      "state": {
+        "budgetTokens": 8192
+      },
+      "log": {
+        "path": "~/.local/state/auto-model/decisions.jsonl",
+        "captureState": false
+      }
+    },
+    "versions": {
+      "node": "24.21.0",
+      "opencode": "opencode v2.0.30",
+      "ollama": "0.32.14",
+      "models": {
+        "embeddinggemma:latest": "85462619ee72",
+        "gemma4:e2b-mlx": "e98b54fe1913",
+        "qwen3.6:35b-mlx": "1b50c6fdc2d4"
+      }
+    }
+  },
+  "summaries": [
+    {
+      "router": "embedding-latest",
+      "model": "embeddinggemma",
+      "overall": {
+        "agree": 30,
+        "n": 39,
+        "rate": 0.7692307692307693,
+        "ci": {
+          "low": 0.6166343954261704,
+          "high": 0.8735433757121625
+        }
+      },
+      "prompts": {
+        "agree": 18,
+        "n": 21,
+        "rate": 0.8571428571428571,
+        "ci": {
+          "low": 0.6536350585077049,
+          "high": 0.950190782017865
+        }
+      },
+      "turns": {
+        "agree": 12,
+        "n": 18,
+        "rate": 0.6666666666666666,
+        "ci": {
+          "low": 0.4374906934425036,
+          "high": 0.8372144563633714
+        }
+      },
+      "applied": {
+        "agree": 31,
+        "n": 39,
+        "rate": 0.7948717948717948,
+        "ci": {
+          "low": 0.6446572703687138,
+          "high": 0.8922040980208888
+        }
+      },
+      "confusion": {
+        "small": {
+          "small": 9,
+          "medium": 7,
+          "large": 0,
+          "error": 0
+        },
+        "medium": {
+          "small": 1,
+          "medium": 11,
+          "large": 1,
+          "error": 0
+        },
+        "large": {
+          "small": 0,
+          "medium": 0,
+          "large": 10,
+          "error": 0
+        }
+      },
+      "latency": {
+        "median": 76,
+        "p95": 82
+      },
+      "tokens": {
+        "input": 953,
+        "output": 0
+      },
+      "costUSD": 0,
+      "errors": 0,
+      "thresholdSweep": [
+        {
+          "threshold": 0,
+          "agreement": {
+            "agree": 30,
+            "n": 39,
+            "rate": 0.7692307692307693,
+            "ci": {
+              "low": 0.6166343954261704,
+              "high": 0.8735433757121625
+            }
+          },
+          "fallbackRate": 0
+        },
+        {
+          "threshold": 0.1,
+          "agreement": {
+            "agree": 31,
+            "n": 39,
+            "rate": 0.7948717948717948,
+            "ci": {
+              "low": 0.6446572703687138,
+              "high": 0.8922040980208888
+            }
+          },
+          "fallbackRate": 0.02564102564102564
+        },
+        {
+          "threshold": 0.2,
+          "agreement": {
+            "agree": 29,
+            "n": 39,
+            "rate": 0.7435897435897436,
+            "ci": {
+              "low": 0.589180432321585,
+              "high": 0.854313741565478
+            }
+          },
+          "fallbackRate": 0.15384615384615385
+        },
+        {
+          "threshold": 0.3,
+          "agreement": {
+            "agree": 29,
+            "n": 39,
+            "rate": 0.7435897435897436,
+            "ci": {
+              "low": 0.589180432321585,
+              "high": 0.854313741565478
+            }
+          },
+          "fallbackRate": 0.15384615384615385
+        },
+        {
+          "threshold": 0.4,
+          "agreement": {
+            "agree": 28,
+            "n": 39,
+            "rate": 0.717948717948718,
+            "ci": {
+              "low": 0.5622438267752261,
+              "high": 0.8345667498605671
+            }
+          },
+          "fallbackRate": 0.358974358974359
+        },
+        {
+          "threshold": 0.5,
+          "agreement": {
+            "agree": 26,
+            "n": 39,
+            "rate": 0.6666666666666666,
+            "ci": {
+              "low": 0.5097710432024052,
+              "high": 0.7936723389308484
+            }
+          },
+          "fallbackRate": 0.48717948717948717
+        },
+        {
+          "threshold": 0.6,
+          "agreement": {
+            "agree": 26,
+            "n": 39,
+            "rate": 0.6666666666666666,
+            "ci": {
+              "low": 0.5097710432024052,
+              "high": 0.7936723389308484
+            }
+          },
+          "fallbackRate": 0.48717948717948717
+        },
+        {
+          "threshold": 0.7,
+          "agreement": {
+            "agree": 22,
+            "n": 39,
+            "rate": 0.5641025641025641,
+            "ci": {
+              "low": 0.40975423474522105,
+              "high": 0.7069547583829534
+            }
+          },
+          "fallbackRate": 0.6410256410256411
+        },
+        {
+          "threshold": 0.8,
+          "agreement": {
+            "agree": 19,
+            "n": 39,
+            "rate": 0.48717948717948717,
+            "ci": {
+              "low": 0.3386492878313309,
+              "high": 0.6380089135430342
+            }
+          },
+          "fallbackRate": 0.8461538461538461
+        },
+        {
+          "threshold": 0.9,
+          "agreement": {
+            "agree": 19,
+            "n": 39,
+            "rate": 0.48717948717948717,
+            "ci": {
+              "low": 0.3386492878313309,
+              "high": 0.6380089135430342
+            }
+          },
+          "fallbackRate": 0.8461538461538461
+        }
+      ],
+      "sessions": [
+        {
+          "session": "cli-option-and-flaky-test",
+          "turns": 18,
+          "withHysteresis": {
+            "agreement": {
+              "agree": 12,
+              "n": 18,
+              "rate": 0.6666666666666666,
+              "ci": {
+                "low": 0.4374906934425036,
+                "high": 0.8372144563633714
+              }
+            },
+            "switches": 7
+          },
+          "withoutHysteresis": {
+            "agreement": {
+              "agree": 12,
+              "n": 18,
+              "rate": 0.6666666666666666,
+              "ci": {
+                "low": 0.4374906934425036,
+                "high": 0.8372144563633714
+              }
+            },
+            "switches": 7
+          }
+        }
+      ]
+    }
+  ],
+  "cases": [
+    {
+      "router": "embedding-latest",
+      "kind": "prompt",
+      "caseID": "p01",
+      "label": "small",
+      "proposed": "small",
+      "applied": "small",
+      "confidence": 0.1793887180099845,
+      "reason": "decision",
+      "latencyMs": 74,
+      "inputTokens": 20,
+      "outputTokens": 0,
+      "costUSD": 0
+    },
+    {
+      "router": "embedding-latest",
+      "kind": "prompt",
+      "caseID": "p02",
+      "label": "small",
+      "proposed": "medium",
+      "applied": "medium",
+      "confidence": 0.3880459999736273,
+      "reason": "decision",
+      "latencyMs": 82,
+      "inputTokens": 29,
+      "outputTokens": 0,
+      "costUSD": 0
+    },
+    {
+      "router": "embedding-latest",
+      "kind": "prompt",
+      "caseID": "p03",
+      "label": "small",
+      "proposed": "small",
+      "applied": "small",
+      "confidence": 0.7362620476253872,
+      "reason": "decision",
+      "latencyMs": 73,
+      "inputTokens": 15,
+      "outputTokens": 0,
+      "costUSD": 0
+    },
+    {
+      "router": "embedding-latest",
+      "kind": "prompt",
+      "caseID": "p04",
+      "label": "small",
+      "proposed": "medium",
+      "applied": "medium",
+      "confidence": 0.3994374245772534,
+      "reason": "decision",
+      "latencyMs": 74,
+      "inputTokens": 21,
+      "outputTokens": 0,
+      "costUSD": 0
+    },
+    {
+      "router": "embedding-latest",
+      "kind": "prompt",
+      "caseID": "p05",
+      "label": "small",
+      "proposed": "small",
+      "applied": "small",
+      "confidence": 0.43703327263431063,
+      "reason": "decision",
+      "latencyMs": 80,
+      "inputTokens": 25,
+      "outputTokens": 0,
+      "costUSD": 0
+    },
+    {
+      "router": "embedding-latest",
+      "kind": "prompt",
+      "caseID": "p06",
+      "label": "small",
+      "proposed": "small",
+      "applied": "small",
+      "confidence": 0.665828753105964,
+      "reason": "decision",
+      "latencyMs": 75,
+      "inputTokens": 19,
+      "outputTokens": 0,
+      "costUSD": 0
+    },
+    {
+      "router": "embedding-latest",
+      "kind": "prompt",
+      "caseID": "p07",
+      "label": "small",
+      "proposed": "small",
+      "applied": "small",
+      "confidence": 0.44369125348906446,
+      "reason": "decision",
+      "latencyMs": 76,
+      "inputTokens": 28,
+      "outputTokens": 0,
+      "costUSD": 0
+    },
+    {
+      "router": "embedding-latest",
+      "kind": "prompt",
+      "caseID": "p08",
+      "label": "medium",
+      "proposed": "medium",
+      "applied": "medium",
+      "confidence": 0.7079820234614799,
+      "reason": "decision",
+      "latencyMs": 81,
+      "inputTokens": 25,
+      "outputTokens": 0,
+      "costUSD": 0
+    },
+    {
+      "router": "embedding-latest",
+      "kind": "prompt",
+      "caseID": "p09",
+      "label": "medium",
+      "proposed": "small",
+      "applied": "medium",
+      "confidence": 0.09678950609858274,
+      "reason": "low-confidence-fallback",
+      "latencyMs": 71,
+      "inputTokens": 23,
+      "outputTokens": 0,
+      "costUSD": 0
+    },
+    {
+      "router": "embedding-latest",
+      "kind": "prompt",
+      "caseID": "p10",
+      "label": "medium",
+      "proposed": "medium",
+      "applied": "medium",
+      "confidence": 0.4259901227214339,
+      "reason": "decision",
+      "latencyMs": 73,
+      "inputTokens": 21,
+      "outputTokens": 0,
+      "costUSD": 0
+    },
+    {
+      "router": "embedding-latest",
+      "kind": "prompt",
+      "caseID": "p11",
+      "label": "medium",
+      "proposed": "medium",
+      "applied": "medium",
+      "confidence": 0.7514619797246513,
+      "reason": "decision",
+      "latencyMs": 82,
+      "inputTokens": 33,
+      "outputTokens": 0,
+      "costUSD": 0
+    },
+    {
+      "router": "embedding-latest",
+      "kind": "prompt",
+      "caseID": "p12",
+      "label": "medium",
+      "proposed": "medium",
+      "applied": "medium",
+      "confidence": 0.39867913886783307,
+      "reason": "decision",
+      "latencyMs": 76,
+      "inputTokens": 27,
+      "outputTokens": 0,
+      "costUSD": 0
+    },
+    {
+      "router": "embedding-latest",
+      "kind": "prompt",
+      "caseID": "p13",
+      "label": "medium",
+      "proposed": "medium",
+      "applied": "medium",
+      "confidence": 0.4312030635692413,
+      "reason": "decision",
+      "latencyMs": 75,
+      "inputTokens": 21,
+      "outputTokens": 0,
+      "costUSD": 0
+    },
+    {
+      "router": "embedding-latest",
+      "kind": "prompt",
+      "caseID": "p14",
+      "label": "medium",
+      "proposed": "medium",
+      "applied": "medium",
+      "confidence": 0.683590361352291,
+      "reason": "decision",
+      "latencyMs": 78,
+      "inputTokens": 27,
+      "outputTokens": 0,
+      "costUSD": 0
+    },
+    {
+      "router": "embedding-latest",
+      "kind": "prompt",
+      "caseID": "p15",
+      "label": "large",
+      "proposed": "large",
+      "applied": "large",
+      "confidence": 0.6980272467890124,
+      "reason": "decision",
+      "latencyMs": 76,
+      "inputTokens": 30,
+      "outputTokens": 0,
+      "costUSD": 0
+    },
+    {
+      "router": "embedding-latest",
+      "kind": "prompt",
+      "caseID": "p16",
+      "label": "large",
+      "proposed": "large",
+      "applied": "large",
+      "confidence": 1,
+      "reason": "decision",
+      "latencyMs": 79,
+      "inputTokens": 35,
+      "outputTokens": 0,
+      "costUSD": 0
+    },
+    {
+      "router": "embedding-latest",
+      "kind": "prompt",
+      "caseID": "p17",
+      "label": "large",
+      "proposed": "large",
+      "applied": "large",
+      "confidence": 1,
+      "reason": "decision",
+      "latencyMs": 71,
+      "inputTokens": 30,
+      "outputTokens": 0,
+      "costUSD": 0
+    },
+    {
+      "router": "embedding-latest",
+      "kind": "prompt",
+      "caseID": "p18",
+      "label": "large",
+      "proposed": "large",
+      "applied": "large",
+      "confidence": 0.6523197816836662,
+      "reason": "decision",
+      "latencyMs": 74,
+      "inputTokens": 28,
+      "outputTokens": 0,
+      "costUSD": 0
+    },
+    {
+      "router": "embedding-latest",
+      "kind": "prompt",
+      "caseID": "p19",
+      "label": "large",
+      "proposed": "large",
+      "applied": "large",
+      "confidence": 1,
+      "reason": "decision",
+      "latencyMs": 80,
+      "inputTokens": 30,
+      "outputTokens": 0,
+      "costUSD": 0
+    },
+    {
+      "router": "embedding-latest",
+      "kind": "prompt",
+      "caseID": "p20",
+      "label": "large",
+      "proposed": "large",
+      "applied": "large",
+      "confidence": 0.71823625347018,
+      "reason": "decision",
+      "latencyMs": 72,
+      "inputTokens": 39,
+      "outputTokens": 0,
+      "costUSD": 0
+    },
+    {
+      "router": "embedding-latest",
+      "kind": "prompt",
+      "caseID": "p21",
+      "label": "large",
+      "proposed": "large",
+      "applied": "large",
+      "confidence": 1,
+      "reason": "decision",
+      "latencyMs": 76,
+      "inputTokens": 40,
+      "outputTokens": 0,
+      "costUSD": 0
+    },
+    {
+      "router": "embedding-latest",
+      "kind": "turn",
+      "caseID": "cli-option-and-flaky-test#1",
+      "label": "small",
+      "proposed": "small",
+      "applied": "small",
+      "confidence": 0.7215466740135539,
+      "reason": "decision",
+      "latencyMs": 82,
+      "inputTokens": 21,
+      "outputTokens": 0,
+      "costUSD": 0
+    },
+    {
+      "router": "embedding-latest",
+      "kind": "turn",
+      "caseID": "cli-option-and-flaky-test#2",
+      "label": "small",
+      "proposed": "medium",
+      "applied": "small",
+      "confidence": 0.3596824972446738,
+      "reason": "hysteresis-hold",
+      "latencyMs": 75,
+      "inputTokens": 15,
+      "outputTokens": 0,
+      "costUSD": 0
+    },
+    {
+      "router": "embedding-latest",
+      "kind": "turn",
+      "caseID": "cli-option-and-flaky-test#3",
+      "label": "medium",
+      "proposed": "medium",
+      "applied": "small",
+      "confidence": 0.19179597723928563,
+      "reason": "hysteresis-hold",
+      "latencyMs": 78,
+      "inputTokens": 30,
+      "outputTokens": 0,
+      "costUSD": 0
+    },
+    {
+      "router": "embedding-latest",
+      "kind": "turn",
+      "caseID": "cli-option-and-flaky-test#4",
+      "label": "medium",
+      "proposed": "medium",
+      "applied": "medium",
+      "confidence": 0.7477534971928371,
+      "reason": "decision",
+      "latencyMs": 76,
+      "inputTokens": 17,
+      "outputTokens": 0,
+      "costUSD": 0
+    },
+    {
+      "router": "embedding-latest",
+      "kind": "turn",
+      "caseID": "cli-option-and-flaky-test#5",
+      "label": "small",
+      "proposed": "medium",
+      "applied": "medium",
+      "confidence": 0.4517397090433629,
+      "reason": "decision",
+      "latencyMs": 79,
+      "inputTokens": 12,
+      "outputTokens": 0,
+      "costUSD": 0
+    },
+    {
+      "router": "embedding-latest",
+      "kind": "turn",
+      "caseID": "cli-option-and-flaky-test#6",
+      "label": "medium",
+      "proposed": "medium",
+      "applied": "medium",
+      "confidence": 0.17899277949752215,
+      "reason": "decision",
+      "latencyMs": 80,
+      "inputTokens": 13,
+      "outputTokens": 0,
+      "costUSD": 0
+    },
+    {
+      "router": "embedding-latest",
+      "kind": "turn",
+      "caseID": "cli-option-and-flaky-test#7",
+      "label": "small",
+      "proposed": "medium",
+      "applied": "medium",
+      "confidence": 0.36890747267616775,
+      "reason": "decision",
+      "latencyMs": 77,
+      "inputTokens": 17,
+      "outputTokens": 0,
+      "costUSD": 0
+    },
+    {
+      "router": "embedding-latest",
+      "kind": "turn",
+      "caseID": "cli-option-and-flaky-test#8",
+      "label": "small",
+      "proposed": "small",
+      "applied": "small",
+      "confidence": 0.3832490344058242,
+      "reason": "decision",
+      "latencyMs": 83,
+      "inputTokens": 15,
+      "outputTokens": 0,
+      "costUSD": 0
+    },
+    {
+      "router": "embedding-latest",
+      "kind": "turn",
+      "caseID": "cli-option-and-flaky-test#9",
+      "label": "large",
+      "proposed": "large",
+      "applied": "large",
+      "confidence": 0.6769782190760545,
+      "reason": "decision",
+      "latencyMs": 77,
+      "inputTokens": 30,
+      "outputTokens": 0,
+      "costUSD": 0
+    },
+    {
+      "router": "embedding-latest",
+      "kind": "turn",
+      "caseID": "cli-option-and-flaky-test#10",
+      "label": "medium",
+      "proposed": "large",
+      "applied": "large",
+      "confidence": 0.7040544000125989,
+      "reason": "decision",
+      "latencyMs": 75,
+      "inputTokens": 15,
+      "outputTokens": 0,
+      "costUSD": 0
+    },
+    {
+      "router": "embedding-latest",
+      "kind": "turn",
+      "caseID": "cli-option-and-flaky-test#11",
+      "label": "large",
+      "proposed": "large",
+      "applied": "large",
+      "confidence": 0.7254945216853823,
+      "reason": "decision",
+      "latencyMs": 76,
+      "inputTokens": 39,
+      "outputTokens": 0,
+      "costUSD": 0
+    },
+    {
+      "router": "embedding-latest",
+      "kind": "turn",
+      "caseID": "cli-option-and-flaky-test#12",
+      "label": "medium",
+      "proposed": "medium",
+      "applied": "medium",
+      "confidence": 0.6594635869160672,
+      "reason": "decision",
+      "latencyMs": 75,
+      "inputTokens": 20,
+      "outputTokens": 0,
+      "costUSD": 0
+    },
+    {
+      "router": "embedding-latest",
+      "kind": "turn",
+      "caseID": "cli-option-and-flaky-test#13",
+      "label": "small",
+      "proposed": "medium",
+      "applied": "medium",
+      "confidence": 0.11583480537856407,
+      "reason": "decision",
+      "latencyMs": 77,
+      "inputTokens": 23,
+      "outputTokens": 0,
+      "costUSD": 0
+    },
+    {
+      "router": "embedding-latest",
+      "kind": "turn",
+      "caseID": "cli-option-and-flaky-test#14",
+      "label": "small",
+      "proposed": "medium",
+      "applied": "medium",
+      "confidence": 0.34515519203555517,
+      "reason": "decision",
+      "latencyMs": 80,
+      "inputTokens": 22,
+      "outputTokens": 0,
+      "costUSD": 0
+    },
+    {
+      "router": "embedding-latest",
+      "kind": "turn",
+      "caseID": "cli-option-and-flaky-test#15",
+      "label": "large",
+      "proposed": "large",
+      "applied": "large",
+      "confidence": 1,
+      "reason": "decision",
+      "latencyMs": 75,
+      "inputTokens": 43,
+      "outputTokens": 0,
+      "costUSD": 0
+    },
+    {
+      "router": "embedding-latest",
+      "kind": "turn",
+      "caseID": "cli-option-and-flaky-test#16",
+      "label": "medium",
+      "proposed": "medium",
+      "applied": "medium",
+      "confidence": 0.3998763337785449,
+      "reason": "decision",
+      "latencyMs": 82,
+      "inputTokens": 17,
+      "outputTokens": 0,
+      "costUSD": 0
+    },
+    {
+      "router": "embedding-latest",
+      "kind": "turn",
+      "caseID": "cli-option-and-flaky-test#17",
+      "label": "small",
+      "proposed": "small",
+      "applied": "small",
+      "confidence": 1,
+      "reason": "decision",
+      "latencyMs": 76,
+      "inputTokens": 21,
+      "outputTokens": 0,
+      "costUSD": 0
+    },
+    {
+      "router": "embedding-latest",
+      "kind": "turn",
+      "caseID": "cli-option-and-flaky-test#18",
+      "label": "small",
+      "proposed": "small",
+      "applied": "small",
+      "confidence": 0.10509018329425802,
+      "reason": "decision",
+      "latencyMs": 76,
+      "inputTokens": 17,
+      "outputTokens": 0,
+      "costUSD": 0
+    }
+  ]
+}

@@ -24,7 +24,9 @@ A plugin routes every user turn, applies a confidence fallback, switches the mod
 
 **A small general model did just as well.** Gemma 4 E2B, a 2B-class general model with thinking off, proposed the labelled tier for 29 of 39 cases (74%, interval 59–85%), and 13 of 18 session turns. The difference from Kev is well inside the noise. On this evidence, a purpose-built System One model gave no measurable accuracy advantage over a general small model running on the same machine. Kev's real advantage is a probability distribution over the choices. Gemma's self-reported confidence never fell below 0.9, so it cannot drive a fallback at all. The two also fail differently: Gemma sent 5 of 13 `medium` cases to `small`, handing real coding work to the weakest model. Kev's errors were split, so more of them wasted compute rather than risking quality.
 
-**The embedding baseline was poor.** Matching against 30 labelled examples agreed with the labels for 15 of 39 cases (38%), and 4 of 18 session turns. It proposed `large` for 30 of 39 cases. With a few dozen examples, nearest-neighbour routing mostly measures wording and length.
+**The first embedding baseline was a flawed test.** As built, it embedded the whole routing state: the latest message, the current tier, the recent tools and the earlier turns, as one structured block. It then compared that block with 30 bare example prompts of 8 to 16 words. Long, structured text was being compared with short prompts. The longest examples are the `large` ones, and the router proposed `large` for 30 of 39 cases, agreeing with the labels on only 15 (38%).
+
+Rerun on the latest message alone, which is how embedding routers are usually used and matches the examples, it agreed on 30 of 39 (77%, interval 62–87%). That ties with Kev and Gemma: in paired tests, each router won 6 or 7 cases from the other. Jev still beat it, 8 cases to 1 (p = 0.04). Its errors were mostly short small tasks sent to `medium`, and it recognised all 10 `large` cases ([`results/2026-10-18-embedding-latest-ac57158`](results/2026-10-18-embedding-latest-ac57158/README.md)). On clear-cut requests, a few dozen labelled examples and a local embedding model routed as well as the small local models.
 
 **The safety net nearly disabled the router.** The planned fallback, "if confidence is below 0.4, use `medium`", caught 72% of Kev's decisions. On the session, the tier never changed: applied agreement fell to 56%, against 74% for Kev's raw proposals ([`results/2026-10-18-ad716c3`](results/2026-10-18-ad716c3/report.md)). Kev's median confidence was 0.25, because it rescales probability from chance, so a confident-looking 0.6 probability reports as about 0.4. The threshold is now 0.1, set from the sweep. Nothing failed visibly; only the decision log's reason codes showed the problem.
 
@@ -41,7 +43,8 @@ Kev is a small open copy of TypeSafe's System One API, which raises the question
 | Jev (hosted) | 37/39 (95%, interval 83–99%) | 20/21 | 17/18 |
 | Kev (local) | 30/39 (77%, 62–87%); 29/39 in another run | 18/21 | 12/18 |
 | Gemma 4 E2B (local) | 29/39 (74%, 59–85%) | 16/21 | 13/18 |
-| Embedding (local) | 15/39 (38%, 25–54%) | 11/21 | 4/18 |
+| Embedding, latest message only (local) | 30/39 (77%, 62–87%) | 18/21 | 12/18 |
+| Embedding, full state (local, original) | 15/39 (38%, 25–54%) | 11/21 | 4/18 |
 
 **Jev was clearly better than the small general model, and probably better than Kev.** Every router saw the same cases, so the comparison can be paired:
 - **Against Gemma:** Jev was right on 8 cases Gemma missed, and on none the other way round. An exact McNemar test gives p = 0.008.
@@ -93,6 +96,31 @@ Three findings follow:
 
 Costs also grow faster than the context: from 2k to 8k, a four-fold increase, the Gemma-to-Qwen switch became five times slower. In the shipped menu, `medium` to `large` is the cheap switch and anything to or from `small` is the expensive one. On a long session, a router that drops to `small` for a quick question pays several seconds to come back. A 32k measurement was left out for time. Some re-read shares exceed 100% because the cold reference was measured separately and timings vary.
 
+## Can a router follow the conversation?
+
+One argument for System One routers is that an embedding of a single request cannot follow a conversation. A follow-up such as "now fix it" carries no sign of how hard the task behind it is.
+
+The session was checked for this. Five turns refer back to earlier work that sets their difficulty:
+- "Write a unit test for the new option."
+- "Fix the failing test."
+- "Try making the log writes sequential."
+- "It's still failing … step back and reason…"
+- "Implement the rotation as designed."
+
+Agreement on those five turns:
+
+| Router | Correct |
+|---|---|
+| Kev | 5/5 |
+| Jev | 4/5 |
+| Embedding, latest message only | 4/5 |
+| Gemma | 2/5 |
+| Embedding, full state | 2/5 |
+
+So the latest-message embedding did not fail on them. Each of these follow-ups says in its own words roughly how hard it is: "step back and reason" nearly repeats one of the `large` examples. The session was written so every turn sits clearly in one tier, and so it contains no follow-up whose wording gives nothing away.
+
+With five turns the intervals span 38–96%. This evidence neither supports nor refutes the argument. Testing it needs real sessions with terse follow-ups.
+
 ## Kev's context limit, and what was not tested
 
 Kev must read its whole input on every turn, and its server reuses work only for byte-identical inputs. On this laptop, that costs about 0.8 ms per token of session state: roughly 1.6 s at 2k tokens and 6.5 s at the 8k cap, against Kev's own figures of tens of milliseconds on datacentre GPUs ([`notes/spike-kev.md`](notes/spike-kev.md)). Local System One routing is fast for short states and noticeably slow for long ones.
@@ -106,7 +134,7 @@ Memory is the other limit. Kev, Gemma and Qwen together took about 37 GB in stea
 Partly.
 
 - **Mechanically, yes.** An agent can choose its own model per turn, including the reasoning level, with about a thousand lines of plugin and routing code and well under a second of routing time on short states. A simple question went to a 2B model and a hard one to a thinking model, without the user doing anything.
-- **On accuracy, it depends on the decision model.** The local options agreed with clear-cut labels about three times in four. Both Kev, a 4B open copy, and a general 2B model reached that level, and neither beat the other. Hosted Jev agreed 37 times in 39, clearly better than the general model and probably better than Kev. The sample is 39 clear cases, so even Jev's figure has an interval of 83–99%. With Kev, the most consequential setting was the fallback threshold. It had to be tuned from data, or it quietly turned automatic selection into "always medium".
+- **On accuracy, it depends on the decision model.** The local options agreed with clear-cut labels about three times in four, and none beat the others. That holds for Kev, a 4B open copy, a general 2B model, and an embedding lookup over 30 examples, once the lookup compared like with like. Hosted Jev agreed 37 times in 39, clearly better than the general model and probably better than Kev. The sample is 39 clear cases, so even Jev's figure has an interval of 83–99%. With Kev, the most consequential setting was the fallback threshold. It had to be tuned from data, or it quietly turned automatic selection into "always medium".
 - **Economically, it depends on the menu.** Where the tiers share weights and the reasoning toggle sits at the end of the prompt, as with Qwen here, switching is nearly free and routing pays off. Where tiers are different models, each switch re-reads the whole context. That favours staying put and penalises a router that flips often.
 
 A fair conclusion for this proof of concept: automatic selection is practical now. A strong decision model makes it accurate on clear requests, for a fraction of a cent and a few hundred milliseconds per turn. The trade-off is that the session text leaves the machine. A small local model is free and private, but makes noticeably more mistakes.

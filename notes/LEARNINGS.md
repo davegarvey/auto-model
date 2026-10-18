@@ -128,6 +128,15 @@ Jev was reached through a reseller. TypeSafe was reported in September to have p
 - **Evidence:** `results/2026-10-18-jev-51a31cf/README.md`.
 - **Why it matters:** the accuracy gain is real but comes bundled with the costs a local set-up avoids. The session text leaves the machine, there is a party in the middle, and the bill is hard to audit. At fractions of a cent per session, money is not the obstacle; trust and data handling are.
 
+### 36. The weak embedding baseline was mostly a flawed test; this revises entry 25 (2026-10-18)
+The original baseline embedded the whole routing state, a long structured block of the latest message, current tier, recent tools and earlier turns, and compared it with 30 bare example prompts of 8 to 16 words. Embedding only the latest message, prefixed like the examples, raised agreement from 15/39 to 30/39 (77%, interval 62–87%). The examples, model and k were unchanged. On the same cases, the latest-message version was right on 16 cases the original missed, and the original on 1 (exact McNemar p = 0.0003). The new version ties with Kev (7 cases each way) and Gemma (7 against 6). Jev beat it 8 cases to 1 (p = 0.04). Its proposals moved from 30 `large` to a spread of 10 / 18 / 11. Its main error is short small tasks sent to `medium` (7 of 16), at confidence of 0.45 or below.
+- **Evidence:** `results/2026-10-18-embedding-latest-ac57158/README.md`.
+- **Why it matters:** a baseline is only as fair as its set-up. The original compared unlike texts, and the router's bias towards `large` followed from that, not from embeddings as such. Once like was compared with like, a 30-example lookup matched the small local models on clear-cut requests. Entry 25's conclusion that embedding matching is "not a substitute for a model that reads the request" no longer stands on this data.
+
+### 37. The scripted session can't test whether a router follows a conversation (2026-10-18)
+Five session turns refer back to earlier work that sets their difficulty (turns 4, 6, 10, 11 and 16). The latest-message embedding, which sees none of the history, got 4 of them right, the same as Jev; Kev got 5 and Gemma 2. The follow-ups give themselves away: "Step back and reason…" nearly repeats a `large` example, and "Fix the failing test" resembles a `medium` one. The session was scripted to keep every label clear-cut (entry 21), so it contains no terse follow-up like "now fix it" or "try again" whose wording carries no sign of the task's difficulty.
+- **Why it matters:** the blog's argument that an embedding of one request cannot follow a conversation is plausible but untested here. Five turns give intervals of 38–96%. Testing it needs real sessions with uninformative follow-ups, which are exactly the cases hard to label without judgement calls.
+
 ## Tiers, reasoning levels and switching cost
 
 ### 4. "Reasoning effort" is often just on or off (2026-10-18)
