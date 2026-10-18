@@ -23,6 +23,14 @@
   "defaultTier": "medium",
   "router": "systemone",
   "systemOne": { "baseURL": "http://localhost:8009", "model": "kev-latest", "timeoutMs": 30000, "pricePerMTok": 0 },
+  "jev": {
+    "baseURL": "https://api.defapi.org",
+    "path": "/api/v1/decisions",
+    "model": "typesafe/jev-1.13",
+    "apiKeyEnv": "DEFAPI_API_KEY",
+    "timeoutMs": 30000,
+    "pricePerMTok": 0.084
+  },
   "embedding": { "baseURL": "http://localhost:11434", "model": "embeddinggemma", "examples": "data/router-examples.jsonl", "k": 5, "timeoutMs": 30000 },
   "llm": { "baseURL": "http://localhost:11434", "model": "gemma4:e2b-mlx", "timeoutMs": 30000 },
   "policy": { "threshold": 0.1, "margin": 0 },

@@ -56,7 +56,8 @@ export async function routeTurn(input: RouteTurnInput): Promise<RouteTurnOutput>
   })
   const targetModel = modelRef(tierById(config, outcome.appliedTier))
   const inputTokens = result?.usage.inputTokens ?? 0
-  const price = router.name === "systemone" ? config.systemOne.pricePerMTok : 0
+  const price =
+    router.name === "systemone" ? config.systemOne.pricePerMTok : router.name === "jev" ? config.jev.pricePerMTok : 0
 
   const record: DecisionRecord = {
     ts: new Date().toISOString(),
@@ -82,7 +83,7 @@ export async function routeTurn(input: RouteTurnInput): Promise<RouteTurnOutput>
     },
     ...(result?.inputTruncated ? { routerInputTruncated: true } : {}),
     usage: result?.usage ?? { inputTokens: 0, outputTokens: 0 },
-    costUSD: (inputTokens / 1e6) * price,
+    costUSD: result?.costUSD ?? (inputTokens / 1e6) * price,
     ...(error ? { error: String((error as Error).message ?? error) } : {}),
     ...(input.meta ? { meta: input.meta } : {}),
     stateText: state.text,
@@ -95,6 +96,11 @@ export async function createRouter(config: Config, name: RouterName = config.rou
   switch (name) {
     case "systemone":
       return systemOneRouter(config.systemOne)
+    case "jev": {
+      const apiKey = process.env[config.jev.apiKeyEnv]
+      if (!apiKey) throw new Error(`the jev router needs an API key in $${config.jev.apiKeyEnv}`)
+      return systemOneRouter({ ...config.jev, name: "jev", apiKey })
+    }
     case "embedding": {
       const { embeddingRouter } = await import("./embedding.ts")
       return embeddingRouter(config.embedding)

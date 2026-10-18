@@ -138,7 +138,8 @@ The plugin reads `.opencode/auto-model/auto-model.config.json`, or the file name
 |---|---|---|
 | `tiers` | small, medium, large | `id`, `description` (what Kev sees), `model` (`provider/model`) and `variant` (the thinking setting) |
 | `defaultTier` | `medium` | Used on low confidence or when the router is unavailable with no current tier |
-| `router` | `systemone` | `systemone` (Kev), `embedding` or `llm` (the baselines) |
+| `router` | `systemone` | `systemone` (Kev), `jev` (hosted Jev, through a reseller), `embedding` or `llm` (the baselines) |
+| `jev.*` | see file | Hosted Jev: base URL, request path, model and price. The key is read from the environment variable named by `jev.apiKeyEnv` (default `DEFAPI_API_KEY`) and is never written to logs or results. Only the routing state leaves the machine |
 | `systemOne` | `localhost:8009`, 30 s timeout | Any `/v1/systemone` server, including TypeSafe's Jev |
 | `policy.threshold` | 0.1 | Below this confidence, apply the default tier. Set from the evaluation's sweep; Kev's confidence runs low by design |
 | `policy.margin` | 0 | Leave the current tier only if the proposed tier's probability leads by at least this. 0 disables hysteresis, which lowered agreement in the evaluation |

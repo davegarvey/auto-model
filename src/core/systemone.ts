@@ -1,4 +1,5 @@
-// Router backed by a System One decision model (Kev, or TypeSafe's Jev) over POST /v1/systemone.
+// Router backed by a System One decision model: Kev locally over POST /v1/systemone, or TypeSafe's hosted Jev
+// through an API that takes the same request body at its own path, with a bearer key.
 import type { Tier } from "./config.ts"
 import { isRecord, postJSON, RouterError, type Router, type RouterResult } from "./router.ts"
 import type { RoutingState } from "./state.ts"
@@ -11,6 +12,12 @@ export interface SystemOneOptions {
   baseURL: string
   model: string
   timeoutMs: number
+  /** Router name in logs and results. Default "systemone". */
+  name?: string
+  /** Request path. Default "/v1/systemone". */
+  path?: string
+  /** Bearer key, sent only in the Authorization header. */
+  apiKey?: string
 }
 
 export function systemOneRequest(model: string, menu: Tier[], state: RoutingState) {
@@ -53,17 +60,19 @@ export function parseSystemOneResponse(body: unknown, menu: Tier[]): Omit<Router
       outputTokens: typeof usage.output_tokens === "number" ? usage.output_tokens : 0,
     },
     ...(typeof body.model === "string" ? { modelVersion: body.model } : {}),
+    ...(typeof usage.cost === "number" ? { costUSD: usage.cost } : {}),
   }
 }
 
 export function systemOneRouter(options: SystemOneOptions): Router {
-  const url = options.baseURL.replace(/\/+$/, "") + "/v1/systemone"
+  const url = options.baseURL.replace(/\/+$/, "") + (options.path ?? "/v1/systemone")
+  const headers: Record<string, string> = options.apiKey ? { authorization: `Bearer ${options.apiKey}` } : {}
   return {
-    name: "systemone",
+    name: options.name ?? "systemone",
     model: options.model,
     async route(menu, state) {
       const started = performance.now()
-      const body = await postJSON(url, systemOneRequest(options.model, menu, state), options.timeoutMs)
+      const body = await postJSON(url, systemOneRequest(options.model, menu, state), options.timeoutMs, headers)
       return { ...parseSystemOneResponse(body, menu), latencyMs: Math.round(performance.now() - started) }
     },
   }

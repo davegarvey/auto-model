@@ -14,6 +14,8 @@ export interface RouterResult {
   modelVersion?: string
   /** True when the router's own model cut the state short (e.g. an embedding model's context limit). */
   inputTruncated?: boolean
+  /** Money cost the service itself reported for the call, when it reports one. */
+  costUSD?: number
 }
 
 /** Rescales a top probability from chance (1/K) to 1, as Kev and Jev report choice confidence. */
@@ -37,12 +39,17 @@ export class RouterError extends Error {
 }
 
 /** POSTs JSON with a timeout, mapping transport failures onto RouterError. */
-export async function postJSON(url: string, body: unknown, timeoutMs: number): Promise<unknown> {
+export async function postJSON(
+  url: string,
+  body: unknown,
+  timeoutMs: number,
+  headers: Record<string, string> = {},
+): Promise<unknown> {
   let response: Response
   try {
     response = await fetch(url, {
       method: "POST",
-      headers: { "content-type": "application/json" },
+      headers: { "content-type": "application/json", ...headers },
       body: JSON.stringify(body),
       signal: AbortSignal.timeout(timeoutMs),
     })

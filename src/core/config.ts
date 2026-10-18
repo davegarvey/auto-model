@@ -4,7 +4,7 @@ import { readFileSync } from "node:fs"
 import { homedir } from "node:os"
 import path from "node:path"
 
-export type RouterName = "systemone" | "embedding" | "llm"
+export type RouterName = "systemone" | "jev" | "embedding" | "llm"
 
 export interface Tier {
   id: string
@@ -22,6 +22,8 @@ export interface Config {
   defaultTier: string
   router: RouterName
   systemOne: { baseURL: string; model: string; timeoutMs: number; pricePerMTok: number }
+  /** Hosted Jev. The key is read from the environment variable named by apiKeyEnv, never from this file. */
+  jev: { baseURL: string; path: string; model: string; apiKeyEnv: string; timeoutMs: number; pricePerMTok: number }
   embedding: { baseURL: string; model: string; examples: string; k: number; timeoutMs: number }
   llm: { baseURL: string; model: string; timeoutMs: number }
   policy: { threshold: number; margin: number }
@@ -38,12 +40,20 @@ export class ConfigError extends Error {
   }
 }
 
-const ROUTERS: readonly RouterName[] = ["systemone", "embedding", "llm"]
+const ROUTERS: readonly RouterName[] = ["systemone", "jev", "embedding", "llm"]
 
 const DEFAULTS = {
   enabled: true,
   router: "systemone" as RouterName,
   systemOne: { baseURL: "http://localhost:8009", model: "kev-latest", timeoutMs: 30000, pricePerMTok: 0 },
+  jev: {
+    baseURL: "https://api.defapi.org",
+    path: "/api/v1/decisions",
+    model: "typesafe/jev-1.13",
+    apiKeyEnv: "DEFAPI_API_KEY",
+    timeoutMs: 30000,
+    pricePerMTok: 0.084,
+  },
   embedding: {
     baseURL: "http://localhost:11434",
     model: "embeddinggemma",
@@ -121,6 +131,7 @@ export function parseConfig(input: unknown, baseDir = process.cwd()): Config {
     defaultTier: input.defaultTier,
     router: router as RouterName,
     systemOne: section(input.systemOne, "systemOne", DEFAULTS.systemOne),
+    jev: section(input.jev, "jev", DEFAULTS.jev),
     embedding: section(input.embedding, "embedding", DEFAULTS.embedding),
     llm: section(input.llm, "llm", DEFAULTS.llm),
     policy: section(input.policy, "policy", DEFAULTS.policy),
@@ -136,6 +147,8 @@ export function parseConfig(input: unknown, baseDir = process.cwd()): Config {
   inRange(config.llm.timeoutMs, 1, 600000, "llm.timeoutMs")
   inRange(config.embedding.k, 1, 100, "embedding.k")
   inRange(config.systemOne.pricePerMTok, 0, 1000, "systemOne.pricePerMTok")
+  inRange(config.jev.timeoutMs, 1, 600000, "jev.timeoutMs")
+  inRange(config.jev.pricePerMTok, 0, 1000, "jev.pricePerMTok")
 
   config.log.path = resolvePath(config.log.path, baseDir)
   config.embedding.examples = resolvePath(config.embedding.examples, baseDir)

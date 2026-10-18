@@ -92,3 +92,34 @@ test("an endpoint that is not running is unavailable", async () => {
   const down = systemOneRouter({ baseURL: "http://127.0.0.1:9", model: "kev-latest", timeoutMs: 2000 })
   assert.equal(await kind(down.route(menu, state)), "unavailable")
 })
+
+test("the hosted Jev variant posts to its own path with a bearer key and reports the service's cost", async () => {
+  let seen: { url?: string; auth?: string } = {}
+  handler = (req, _b, res) => {
+    seen = { url: req.url, auth: req.headers.authorization }
+    reply(200, {
+      model: "typesafe/jev-1.13-20260917",
+      answers: { tier: { type: "choice", choice: "large", probabilities: { small: 0.1, large: 0.9 }, confidence: 0.8 } },
+      usage: { input_tokens: 400, output_tokens: 38, cost: 0.0000336 },
+    })(req, _b, res)
+  }
+  const jev = systemOneRouter({ baseURL, model: "typesafe/jev-1.13", timeoutMs: 2000, name: "jev", path: "/api/v1/decisions", apiKey: "test-key" })
+  const result = await jev.route(menu, state)
+  assert.equal(jev.name, "jev")
+  assert.equal(seen.url, "/api/v1/decisions")
+  assert.equal(seen.auth, "Bearer test-key")
+  assert.equal(lastBody.model, "typesafe/jev-1.13")
+  assert.equal(result.tier, "large")
+  assert.equal(result.costUSD, 0.0000336)
+  assert.equal(result.modelVersion, "typesafe/jev-1.13-20260917")
+})
+
+test("the local Kev router sends no authorization header", async () => {
+  let auth: string | undefined = "unset"
+  handler = (req, _b, res) => {
+    auth = req.headers.authorization
+    reply(200, { answers: { tier: { type: "choice", choice: "small", confidence: 0.5 } } })(req, _b, res)
+  }
+  await router().route(menu, state)
+  assert.equal(auth, undefined)
+})
