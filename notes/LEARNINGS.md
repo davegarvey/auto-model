@@ -54,6 +54,10 @@ The small LLM (Gemma 4 E2B, thinking off, JSON output) took about 185 ms per dec
 Reviewing the router examples, the user agreed at once on most of them but found one genuinely two-sided: "refactor the payment flow so every external call is idempotent, about 40 files". It is large in scope and needs a large context. It is also largely mechanical work on existing code, which suggests medium. The example was replaced with an unambiguous one.
 - **Why it matters:** routers are scored against one person's labels, and some prompts have no single correct tier. Agreement figures have a ceiling below 100%, and a disagreement is not always a routing error. The difficulty also splits along two axes, reasoning depth and context size, which a single small/medium/large ladder conflates.
 
+### 20. Cold starts can silently disable a router (2026-10-18)
+In the first end-to-end evaluation run, the embedding router failed every call. Loading `embeddinggemma` cold takes about 7.8 s, longer than the router's 5 s timeout. Each timed-out request was abandoned before the model finished loading, so the next request started cold again. The timeouts are now 30 s for all routers, and the evaluation warms each router up, unrecorded, before measuring.
+- **Why it matters:** in a local set-up, the router's model shares a server that loads and evicts models on demand. A routing layer needs warm-up and generous timeouts, or it fails in a way that looks like "the router is bad" rather than "the router never ran". The decision log's `endpoint-error` reason is what made this visible.
+
 ## Tiers, reasoning levels and switching cost
 
 ### 4. "Reasoning effort" is often just on or off (2026-10-18)
@@ -69,6 +73,21 @@ Qwen 3.6 with thinking off answered an easy arithmetic question wrongly three ti
 Changing gpt-oss's effort forced a full re-read of a 6,000-token prompt: 4.4 s, against 0.02 s with the cache reused. Its template writes `Reasoning: high` at the top of the system prompt, so everything after it is invalidated. Switching to a different model always means a full re-read, whatever the family, because the cache belongs to the weights.
 - **Evidence:** the probe in the design. A full measurement is planned (task 7.4).
 - **Why it matters:** "same model, different effort" sounds free to switch, and sometimes is. Whether it is depends on an implementation detail no user would see.
+
+### 19. Measured switching costs: one free gear, and family does not help (2026-10-18)
+This is a smoke run of the switching cost benchmark: 2,048-token context, one repetition, Kev stopped to free memory. All rows are times to first token.
+
+| Transition | Reprocessed | Time |
+|---|---|---|
+| Qwen 3.6, thinking toggled (medium to large in the shipped design) | about 1% | 37 ms |
+| gpt-oss, effort low to high | 99% | 1.4 s |
+| Gemma to Qwen 3.6, already loaded | 100% | 1.9 s |
+| Gemma to Qwen 3.6, not loaded | 100% | 9.8 s, of which 7.8 s loading |
+| Qwen 3.6 35B to Qwen 3.8 27B, same family | about 100% | 15–17 s |
+
+The last row is slow because Qwen 3.8 is a dense 27B model reading 2k tokens, against 1.9 s for the 35B mixture-of-experts Qwen 3.6.
+- **Evidence:** a smoke output in the scratchpad. The full run (2k, 8k and 32k tokens, three repetitions) is task 8.1.
+- **Why it matters:** this confirms entry 6 with numbers. Whether a "gear change" is free depends on where the model's template puts the setting: Qwen's thinking toggle sits at the end and reuses the cache, while gpt-oss's effort sits at the top and does not. A model from the same family shares nothing. Model size class matters more to switching cost than family, because a dense model re-reads context many times more slowly than a mixture-of-experts model of similar size. The shipped design's cheap switch is medium to large, and its expensive one is to and from small.
 
 ## The decision model
 

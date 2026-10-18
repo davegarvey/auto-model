@@ -34,19 +34,19 @@
 
 ## 6. Evaluation dataset
 
-- [ ] 6.1 Define the dataset formats (`data/eval/prompts.jsonl` and `data/eval/sessions/*.json`), with a validator that rejects unknown labels. Verify with unit tests for valid and invalid labels.
+- [x] 6.1 Define the dataset formats (`data/eval/prompts.jsonl` and `data/eval/sessions/*.json`), with a validator that rejects unknown labels. Verify with unit tests for valid and invalid labels.
 - [ ] 6.2 Load the user's roughly 20 labelled prompts into `data/eval/prompts.jsonl`. Verify that the validator passes and that the user confirms the content can be published.
 - [ ] 6.3 Record at least one long multi-turn OpenCode session on public material, convert it to the session format, and have the user label each turn. Verify that the validator passes, that there are at least 15 labelled turns, and that the user confirms the content can be published.
 
 ## 7. Evaluation runner and report
 
-- [ ] 7.1 Implement the evaluation runner: all routers over prompts and sessions, agreement with Wilson intervals, confusion matrices, median and p95 latency, tokens and cost. Verify with a unit test on a fixture dataset with stubbed routers and known expected numbers.
-- [ ] 7.2 Add the confidence-threshold sweep, the state-size sweep (2k, 4k, 8k and 16k tokens) and the session hysteresis simulation (switch counts with and without hysteresis). Verify with fixture tests in which the expected switch counts and sweep rows are known.
-- [ ] 7.3 Write `report.md`, `report.json` and `decisions.jsonl` to `results/<date>-<shortsha>/`, with model versions, configuration, dataset revision and date. Verify that a fixture run produces all three files and that the metadata fields are present.
-- [ ] 7.4 Implement the switching cost benchmark (`src/eval/switch-cost.ts`):
+- [x] 7.1 Implement the evaluation runner: all routers over prompts and sessions, agreement with Wilson intervals, confusion matrices, median and p95 latency, tokens and cost. Verify with a unit test on a fixture dataset with stubbed routers and known expected numbers.
+- [x] 7.2 Add the confidence-threshold sweep, the state-size sweep (2k, 4k, 8k and 16k tokens) and the session hysteresis simulation (switch counts with and without hysteresis). Verify with fixture tests in which the expected switch counts and sweep rows are known.
+- [x] 7.3 Write `report.md`, `report.json` and `decisions.jsonl` to `results/<date>-<shortsha>/`, with model versions, configuration, dataset revision and date. Verify that a fixture run produces all three files and that the metadata fields are present.
+- [x] 7.4 Implement the switching cost benchmark (`src/eval/switch-cost.ts`):
   - five transition types;
   - contexts of about 2k, 8k and 32k tokens, cut from the recorded session text;
-  - the two-model, single-model (`gpt-oss:20b` effort levels) and mixed-family designs;
+  - the two-model same-family (`qwen3.6` against `qwen3.8`), single-model (`gpt-oss:20b` effort levels) and mixed-family (the shipped tiers) designs;
   - the median of three runs;
   - load and prompt processing times read from Ollama's responses.
 

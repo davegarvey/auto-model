@@ -164,12 +164,16 @@ The benchmark lives in `src/eval/switch-cost.ts` and calls Ollama's `/api/chat`,
 2. sends the "to" request with the same conversation text;
 3. reads `load_duration`, `prompt_eval_duration` and `prompt_eval_count` from Ollama's response.
 
-The "not loaded" case first unloads the target with `keep_alive: 0`. Each measurement is repeated three times and the median is reported.
+The "not loaded" case first unloads the target with `keep_alive: 0`. Each measurement is repeated three times and the median is reported. Every repetition prefixes the context with a fresh nonce, so no model has seen it before the warm-up.
 
-The context is cut from the recorded multi-turn session's text, so it resembles real coding context rather than repeated filler. The three tier designs are:
-- **Two-model:** the shipped tiers.
-- **Single-model:** `gpt-oss:20b` at low, medium and high, the only installed model with named effort levels.
-- **Mixed-family:** `gemma4:e2b-mlx` and `qwen3.6:35b-mlx`, which already covers a move across families.
+Ollama's `prompt_eval_count` reports the full prompt length even when the prompt came from cache, so it cannot count reprocessed tokens. The benchmark therefore also measures a cold read of the same context for each model and size. It reports the share reprocessed as the transition's prompt-processing time divided by that cold time.
+
+The context is cut from the recorded multi-turn session's text when there is enough of it, otherwise from the repository's own documents, so it resembles real coding context rather than repeated filler. The three tier designs, all using installed models, are:
+- **Mixed-family (the shipped tiers):** `gemma4:e2b-mlx` and `qwen3.6:35b-mlx`, including Qwen's thinking toggle.
+- **Two-model, same family:** `qwen3.6:35b-mlx` and `qwen3.8:27b-nvfp4`. This answers whether models from one family can share cached work.
+- **Single-model:** `gpt-oss:20b` at low and high effort, the only installed model with named effort levels.
+
+`num_ctx` is fixed for every request, because changing it reloads the model.
 
 Designs run one after another, so that memory is not contended.
 
