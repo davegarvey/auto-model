@@ -1,0 +1,30 @@
+{"id": "s01", "label": "small", "text": "What does the --dry-run flag do in scripts/release.sh?"}
+{"id": "s02", "label": "small", "text": "Rename the function getUsr to getUser everywhere in src/api."}
+{"id": "s03", "label": "small", "text": "Run the linter and tell me how many warnings there are."}
+{"id": "s04", "label": "small", "text": "Which file defines the DATABASE_URL default?"}
+{"id": "s05", "label": "small", "text": "Fix the typo 'recieve' in the README."}
+{"id": "s06", "label": "small", "text": "Explain what this regex matches: ^\\d{3}-\\d{4}$"}
+{"id": "s07", "label": "small", "text": "Add a trailing newline to every file in the config directory."}
+{"id": "s08", "label": "small", "text": "What version of TypeScript does this project use?"}
+{"id": "s09", "label": "small", "text": "Sort the imports in utils/date.ts alphabetically."}
+{"id": "s10", "label": "small", "text": "Show me the last three commits on this branch."}
+{"id": "m01", "label": "medium", "text": "Add a --verbose option to the CLI that prints each HTTP request, and update the help text."}
+{"id": "m02", "label": "medium", "text": "Write unit tests for the invoice total calculation, including discounts and tax rounding."}
+{"id": "m03", "label": "medium", "text": "The build fails with 'Cannot find module ./config.js' after the rename. Fix it."}
+{"id": "m04", "label": "medium", "text": "Implement pagination for the /orders endpoint using a cursor, matching how /customers does it."}
+{"id": "m05", "label": "medium", "text": "Convert the settings form from class components to hooks without changing behaviour."}
+{"id": "m06", "label": "medium", "text": "Add input validation to the signup handler and return 400 with field errors."}
+{"id": "m07", "label": "medium", "text": "Replace the hand-rolled retry loop in the HTTP client with exponential backoff and jitter."}
+{"id": "m08", "label": "medium", "text": "Carry on with the migration we started: update the remaining three repositories to the new interface."}
+{"id": "m09", "label": "medium", "text": "Write a GitHub Actions workflow that runs the tests on Node 22 and 24."}
+{"id": "m10", "label": "medium", "text": "This test fails with 'expected 3, received 2'. Find the bug and fix it."}
+{"id": "l01", "label": "large", "text": "Requests occasionally hang for exactly 30 seconds in production but never locally. Work out why."}
+{"id": "l02", "label": "large", "text": "Design a caching layer for the pricing service that stays consistent when prices change mid-checkout."}
+{"id": "l03", "label": "large", "text": "Memory grows steadily over a week until the worker is killed. Find the leak."}
+{"id": "l04", "label": "large", "text": "We need to split the monolith's user module into a service. Propose the boundaries, data migration and rollout plan."}
+{"id": "l05", "label": "large", "text": "Your last two fixes for the race condition didn't work. Step back and reason about it from first principles."}
+{"id": "l06", "label": "large", "text": "Compare event sourcing with a conventional CRUD model for our ledger and recommend one, with the trade-offs."}
+{"id": "l07", "label": "large", "text": "Write an algorithm to schedule jobs across machines with dependencies and deadlines, and prove it handles cycles."}
+{"id": "l08", "label": "large", "text": "Tests pass, but customers report being charged twice a few times a week. Work out how that can happen."}
+{"id": "l09", "label": "large", "text": "The p99 latency doubled after the last release but no single change looks responsible. Investigate."}
+{"id": "l10", "label": "large", "text": "Review this concurrency design for deadlocks and starvation, and suggest a safer locking order."}

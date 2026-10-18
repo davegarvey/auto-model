@@ -22,6 +22,8 @@ export interface DecisionRecord {
   switched: boolean
   latencyMs: number
   state: { estimatedTokens: number; chars: number; truncated: boolean; droppedMessages: number }
+  /** The router's model read less than the whole state. */
+  routerInputTruncated?: boolean
   usage: { inputTokens: number; outputTokens: number }
   costUSD: number
   error?: string

@@ -12,7 +12,12 @@ export interface RouterResult {
   latencyMs: number
   /** Version the router's model reported, if any. */
   modelVersion?: string
+  /** True when the router's own model cut the state short (e.g. an embedding model's context limit). */
+  inputTruncated?: boolean
 }
+
+/** Rescales a top probability from chance (1/K) to 1, as Kev and Jev report choice confidence. */
+export const chanceRescaled = (p: number, k: number) => (k <= 1 ? 1 : Math.max(0, (p - 1 / k) / (1 - 1 / k)))
 
 export interface Router {
   readonly name: string

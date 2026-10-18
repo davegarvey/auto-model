@@ -80,6 +80,7 @@ export async function routeTurn(input: RouteTurnInput): Promise<RouteTurnOutput>
       truncated: state.truncated,
       droppedMessages: state.droppedMessages,
     },
+    ...(result?.inputTruncated ? { routerInputTruncated: true } : {}),
     usage: result?.usage ?? { inputTokens: 0, outputTokens: 0 },
     costUSD: (inputTokens / 1e6) * price,
     ...(error ? { error: String((error as Error).message ?? error) } : {}),
