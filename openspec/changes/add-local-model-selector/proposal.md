@@ -25,6 +25,7 @@ The aim is to test, first-hand, the claim that a small "System One" decision mod
   - routing latency;
   - a confidence-threshold sweep;
   - a sweep of state size for the System One router (2k, 4k, 8k and 16k tokens).
+- Add a switching cost benchmark. It measures what moving between tiers costs in model load time and prompt reprocessing, for a different model, the same model with thinking toggled, and the same model at another effort level. It compares a two-model, a single-model (effort levels only) and a mixed-family tier design.
 - Add an Apache-2.0 licence, a README with setup steps, committed evaluation results, and a short plain-language write-up of findings.
 - Begin with two spikes that confirm feasibility before building the rest:
   - that OpenCode applies a plugin's model switch within the same turn;
@@ -39,7 +40,7 @@ Out of scope: hosted or commercial routing services (including Jev itself), cont
 - `opencode-integration`: applying routing decisions inside OpenCode sessions, per user turn and for sub-agent sessions.
 - `routing-decision-log`: recording each routing decision in a durable, machine-readable form.
 - `routing-baselines`: alternative routers (embedding nearest-neighbour and small-LLM) that share the same menu and interface.
-- `routing-evaluation`: running routers over a labelled dataset and long sessions, and reporting agreement, latency, threshold and state-size results.
+- `routing-evaluation`: running routers over a labelled dataset and long sessions, reporting agreement, latency, threshold and state-size results, and benchmarking the cost of switching tiers.
 
 ### Modified Capabilities
 None. This is a new project with no existing specs.

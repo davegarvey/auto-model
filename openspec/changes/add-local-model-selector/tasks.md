@@ -5,7 +5,6 @@
 - [ ] 1.1 Add an Apache-2.0 `LICENSE`, a `.gitignore` (ignoring `vendor/` and `node_modules/`, but not `results/`), and a `package.json` with `"type": "module"` and Node ≥ 24. Verify that `node --version` satisfies the engines field and that `git status` shows only the intended files.
 - [ ] 1.2 Spike: write a throwaway v2 plugin that calls `ctx.session.switchModel` from `session.hook("prompt")` to move from `ollama/qwen3.6:35b-mlx#none` to `ollama/gemma4:e2b-mlx#none`, load it from the project `opencode.json`, and send one prompt. Verify from the Ollama request log, or `ollama ps`, that the same turn's first request used the new model. Record the outcome and the OpenCode version in `notes/spike-switch.md`. If it fails, test the `aisdk.hook("language")` fallback and record that instead.
 - [ ] 1.3 Spike: add `scripts/serve-kev.sh` (pinned Kev commit, `uv sync --extra serve`, `jaredpalmer/kev-4b@v1.0`, port 8009) and send one `choice` question over three tier descriptions with `curl`. Verify a valid response with `choice`, `confidence` and `probabilities`. Record cold and warm latency, and peak memory with Kev and both Ollama models loaded, in `notes/spike-kev.md`.
-- [ ] 1.4 Spike: measure whether toggling Qwen 3.6's thinking between turns invalidates Ollama's prompt cache, using the existing probe approach on a prompt of about 6,000 tokens. Verify by recording the timing with the cache reused and after a toggle in `notes/spike-kev.md`.
 
 ## 2. Routing core: configuration and state
 
@@ -44,10 +43,18 @@
 - [ ] 7.1 Implement the evaluation runner: all routers over prompts and sessions, agreement with Wilson intervals, confusion matrices, median and p95 latency, tokens and cost. Verify with a unit test on a fixture dataset with stubbed routers and known expected numbers.
 - [ ] 7.2 Add the confidence-threshold sweep, the state-size sweep (2k, 4k, 8k and 16k tokens) and the session hysteresis simulation (switch counts with and without hysteresis). Verify with fixture tests in which the expected switch counts and sweep rows are known.
 - [ ] 7.3 Write `report.md`, `report.json` and `decisions.jsonl` to `results/<date>-<shortsha>/`, with model versions, configuration, dataset revision and date. Verify that a fixture run produces all three files and that the metadata fields are present.
+- [ ] 7.4 Implement the switching cost benchmark (`src/eval/switch-cost.ts`):
+  - five transition types;
+  - contexts of about 2k, 8k and 32k tokens, cut from the recorded session text;
+  - the two-model, single-model (`gpt-oss:20b` effort levels) and mixed-family designs;
+  - the median of three runs;
+  - load and prompt processing times read from Ollama's responses.
+
+  It runs on its own and writes `switch-cost.md` and `switch-cost.json` to the run directory. Verify with a unit test using stubbed Ollama responses, and with one live run at 2k context whose same-setting baseline shows a reused cache: prompt processing well below the cold case.
 
 ## 8. Experiment run and write-up
 
-- [ ] 8.1 Run the full evaluation on the real dataset with all routers loaded locally, and commit the results directory. Verify that the report is complete and that its numbers match a spot check of `decisions.jsonl`.
+- [ ] 8.1 Run the full evaluation on the real dataset with all routers loaded locally, plus the full switching cost benchmark, and commit the results directory. Verify that both reports are complete and that the routing numbers match a spot check of `decisions.jsonl`.
 - [ ] 8.2 Set the live threshold and margin from the sweep results in `auto-model.config.json`. Verify by rerunning `route-once` with the new values.
 - [ ] 8.3 Run one real OpenCode session with the selector live, and keep its decision log in the results directory. Verify that the log shows per-turn decisions and switches.
 - [ ] 8.4 Write `WRITEUP.md`, a plain-language account covering:

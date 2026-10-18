@@ -156,6 +156,25 @@ State text is excluded unless capture is enabled. The routing cost price is per 
 
 The plugin sends one small warm-up request at start-up, so that the first real turn does not pay the model load time.
 
+### 12. Switching cost benchmark against Ollama directly
+The benchmark lives in `src/eval/switch-cost.ts` and calls Ollama's `/api/chat`, bypassing OpenCode and the routers. For each transition, it:
+1. issues a warm-up request that establishes the "from" state;
+2. sends the "to" request with the same conversation text;
+3. reads `load_duration`, `prompt_eval_duration` and `prompt_eval_count` from Ollama's response.
+
+The "not loaded" case first unloads the target with `keep_alive: 0`. Each measurement is repeated three times and the median is reported.
+
+The context is cut from the recorded multi-turn session's text, so it resembles real coding context rather than repeated filler. The three tier designs are:
+- **Two-model:** the shipped tiers.
+- **Single-model:** `gpt-oss:20b` at low, medium and high, the only installed model with named effort levels.
+- **Mixed-family:** `gemma4:e2b-mlx` and `qwen3.6:35b-mlx`, which already covers a move across families.
+
+Designs run one after another, so that memory is not contended.
+
+- **Rationale:** routing accuracy does not depend on how tiers are implemented, but switching cost does. Measuring at the inference server isolates that cost from OpenCode's own overheads.
+- **Alternative considered:** measuring inside live OpenCode sessions. That is noisier and mixes in tool time, though the decision log from task 8.3 still gives a real-world check.
+- **Follow-up, not in this change:** a hysteresis margin that grows with context size, using these measurements.
+
 ## Risks / Trade-offs
 
 - **`switchModel` applies only from the next turn.** → Spike first (task 1.2). The fallbacks, in order, are the `aisdk.hook("language")` swap, then routing from the previous turn's end; the second is weaker and would be reported as such.
@@ -163,7 +182,7 @@ The plugin sends one small warm-up request at start-up, so that the first real t
 - **GPU and memory contention.** Kev, two Ollama models and their context caches total about 41 GB, near the default GPU limit. → Routing runs before generation, not alongside it. Watch memory pressure during the spikes, and drop to Kev-0.8B or gemma4:e4b if needed.
 - **The `small` tier (gemma4:e2b) may fail at multi-step tool use.** → This is acceptable and realistic for the cheapest tier. Swapping to gemma4:e4b is a configuration change.
 - **Labels reflect one person's judgement** on about 20 prompts, so agreement intervals will be wide. → Report counts and intervals. Present results as indicative, not as benchmarks.
-- **Turning thinking on and off may invalidate Qwen's cached prompt,** as effort changes did for gpt-oss. → Note it as a switching cost and measure it once in the spike. It does not change the design.
+- **Turning thinking on and off may invalidate Qwen's cached prompt,** as effort changes did for gpt-oss. → The switching cost benchmark (decision 12) measures it. A large cost would be reported, not designed around, in this change.
 - **The v2 plugin API is new** and may change between patch releases. → Pin the OpenCode version in the README and in report metadata.
 
 ## Migration Plan

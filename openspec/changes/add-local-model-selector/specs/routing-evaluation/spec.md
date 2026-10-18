@@ -59,6 +59,33 @@ The evaluation SHALL apply the configured fallback and hysteresis rules over eac
 - **WHEN** a 15-turn session is evaluated
 - **THEN** the report gives the number of switches each router would make, with and without hysteresis, alongside its agreement
 
+### Requirement: Switching cost benchmark
+The evaluation SHALL measure the cost of moving between tiers. For each transition type and context size, it SHALL report time to first token, split into model load time and prompt processing time, and the number of prompt tokens reprocessed.
+
+#### Scenario: Transition types measured
+- **WHEN** the benchmark runs
+- **THEN** it measures five transitions:
+  - same model and same setting (the baseline);
+  - same model with thinking toggled;
+  - same model with a named effort level changed;
+  - a different model that is already loaded;
+  - a different model that is not loaded.
+
+#### Scenario: Context sizes measured
+- **WHEN** the benchmark runs
+- **THEN** each transition is measured at contexts of about 2,048, 8,192 and 32,768 tokens, built from the same text
+
+#### Scenario: Tier designs compared
+- **WHEN** the benchmark runs
+- **THEN** it reports the switching costs of three tier designs side by side:
+  - the shipped two-model design;
+  - a single-model design whose tiers are effort levels of one model;
+  - a design that mixes model families.
+
+#### Scenario: Runs independently of routing
+- **WHEN** the user runs only the switching cost benchmark
+- **THEN** it completes without any router or labelled dataset, and writes its results to the run directory
+
 ### Requirement: Reproducible, publishable results
 The evaluation SHALL write its report and the per-decision records to files intended for version control. The report SHALL state:
 - the versions of the decision model and of each tier model;
