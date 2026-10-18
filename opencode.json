@@ -1,0 +1,54 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "model": "ollama/qwen3.6:35b-mlx",
+  "small_model": "ollama/gemma4:e2b-mlx",
+  "agent": {
+    "build": {
+      "model": "ollama/qwen3.6:35b-mlx",
+      "variant": "none"
+    },
+    "plan": {
+      "model": "ollama/qwen3.6:35b-mlx",
+      "variant": "none"
+    }
+  },
+  "provider": {
+    "ollama": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Ollama (local)",
+      "options": {
+        "baseURL": "http://localhost:11434/v1",
+        "apiKey": "ollama"
+      },
+      "models": {
+        "gemma4:e2b-mlx": {
+          "name": "Gemma 4 E2B MLX",
+          "variants": {
+            "none": {
+              "reasoningEffort": "none"
+            }
+          },
+          "limit": {
+            "context": 131072,
+            "output": 16384
+          }
+        },
+        "qwen3.6:35b-mlx": {
+          "name": "Qwen 3.6 35B MLX",
+          "variants": {
+            "none": {
+              "reasoningEffort": "none"
+            },
+            "high": {
+              "reasoningEffort": "high"
+            }
+          },
+          "limit": {
+            "context": 262144,
+            "output": 32768
+          }
+        }
+      }
+    }
+  }
+}

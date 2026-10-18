@@ -1,0 +1,120 @@
+# auto-model
+
+An experiment in automatic model selection for a coding agent. Before each turn in [OpenCode](https://opencode.ai), a small local "System One" decision model, [Kev](https://github.com/jaredpalmer/kev), picks which tier of model should handle the request: small, medium or large. The agent then switches to that tier's model. Everything runs locally, with no accounts or API keys.
+
+The repository accompanies a blog post arguing that manual model selection will go the way of the manual gearbox. It is a small, honest experiment, not a product. Findings are recorded as they happen in [`notes/LEARNINGS.md`](notes/LEARNINGS.md).
+
+## How it works
+
+```
+prompt in OpenCode
+  -> plugin builds a compact state from recent turns (default budget 8,192 tokens)
+  -> Kev answers a typed "choice" question over the tier descriptions -> tier + confidence
+  -> policy: low confidence -> default tier; marginal preference -> keep current tier
+  -> plugin switches the session model (if the tier changed) and logs the decision
+  -> the turn runs on that tier's model in Ollama
+```
+
+The tiers are defined in [`auto-model.config.json`](auto-model.config.json). Kev only ever sees each tier's description, never a model name. The shipped tiers are:
+
+| Tier | Model | Thinking |
+|---|---|---|
+| small | `gemma4:e2b-mlx` | off |
+| medium | `qwen3.6:35b-mlx` | off |
+| large | `qwen3.6:35b-mlx` | on |
+
+The models are illustrative. Change them in the configuration (and in `opencode.json`) without touching code.
+
+## Requirements
+
+What it was built and tested on:
+
+- An Apple Silicon Mac with 64 GB of memory. Steady use takes about 37 GB, peaking around 45 GB while Kev loads.
+- [OpenCode v2](https://opencode.ai), 2.0.30 or later.
+- [Ollama](https://ollama.com), 0.32 or later.
+- [uv](https://docs.astral.sh/uv/), for Kev's Python environment.
+- Node.js 24 or later, for the tests and command line tools.
+
+## Setup
+
+1. Pull the tier models:
+
+   ```bash
+   ollama pull gemma4:e2b-mlx
+   ```
+
+   ```bash
+   ollama pull qwen3.6:35b-mlx
+   ```
+
+2. Start Kev. The first run clones Kev at its `kev-1.0` tag into `vendor/kev`, installs its dependencies, and downloads about 9.5 GB of weights. Later runs start in under a minute.
+
+   ```bash
+   ./scripts/serve-kev.sh
+   ```
+
+   Leave it running. It serves `POST /v1/systemone` on `http://localhost:8009`.
+
+3. Check that routing works without OpenCode:
+
+   ```bash
+   node src/eval/route-once.ts "Rename the variable cnt to count in utils.ts"
+   ```
+
+   You should see something like `proposed small (confidence 0.82 …) -> applied small`.
+
+4. Open OpenCode in this directory. The project's `opencode.json` defines the Ollama provider and tier variants, and keeps OpenCode's auxiliary requests (such as session titles) on local models. `.opencode/plugins/auto-model.ts` loads the plugin automatically. Your global OpenCode configuration is not changed.
+
+   ```bash
+   opencode
+   ```
+
+## Usage
+
+Work as normal. Each prompt, including the prompts OpenCode gives to sub-agents, is routed before it runs.
+
+- **Decision log:** `~/.local/state/auto-model/decisions.jsonl`, one JSON object per decision. Each records the tier, confidence, probabilities, reason, latency and state size. Prompt text is left out unless `log.captureState` is set.
+- **Plugin diagnostics:** `~/.local/state/auto-model/plugin.log`.
+- **`/auto-model on | off | status`:** turns routing on or off for the current session, or shows its state.
+- **Choosing a model by hand** pauses routing for that session until `/auto-model on`.
+
+For scripted runs, use `scripts/oc-run.sh` (the same arguments as `opencode run`) rather than `opencode run` directly; see the known issues below.
+
+## Configuration
+
+`auto-model.config.json`. A different file can be set with `AUTO_MODEL_CONFIG`.
+
+| Key | Default | Meaning |
+|---|---|---|
+| `tiers` | small, medium, large | `id`, `description` (what Kev sees), `model` (`provider/model`) and `variant` (the thinking setting) |
+| `defaultTier` | `medium` | Used on low confidence or when the router is unavailable with no current tier |
+| `router` | `systemone` | `systemone` (Kev), `embedding` or `llm` (the baselines) |
+| `systemOne` | `localhost:8009`, 30 s timeout | Any `/v1/systemone` server, including TypeSafe's Jev |
+| `policy.threshold` | 0.4 | Below this confidence, apply the default tier |
+| `policy.margin` | 0.15 | Leave the current tier only if the proposed tier's probability leads by at least this |
+| `state.budgetTokens` | 8192 | Routing state size; Kev-4B is validated up to 8,192 tokens |
+
+## Known issues
+
+- **Routing adds time to every turn.** Kev re-reads the whole state each turn, at about 0.8 ms per token on an M5 Pro: about 6.5 s at the full 8k budget. It caches only identical states.
+- **`opencode run` stalls.** In OpenCode 2.0.30 it intermittently stalls before creating a session. `scripts/oc-run.sh` retries when that happens.
+- **`/auto-model` replies arrive late.** They are delivered with the next turn, because OpenCode queues plugin messages.
+- **Per-session routing state resets** when OpenCode reloads the plugin.
+
+## Development
+
+```bash
+npm test
+```
+
+| Path | Contents |
+|---|---|
+| `src/core` | Configuration, state builder, routers, policy and decision log. Shared by the plugin and the evaluation. |
+| `src/plugin` | The OpenCode adapter |
+| `src/eval` | Command line tools and the evaluation |
+| `openspec/` | The change proposal, specs, design and tasks behind this work |
+| `notes/` | Spike reports and the learnings log |
+
+## Licence
+
+[Apache-2.0](LICENSE).
