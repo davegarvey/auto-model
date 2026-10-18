@@ -41,7 +41,7 @@
       "embedding": {
         "baseURL": "http://localhost:11434",
         "model": "embeddinggemma",
-        "examples": "/Users/dave/code/auto-model/data/router-examples.jsonl",
+        "examples": "data/router-examples.jsonl",
         "k": 5,
         "timeoutMs": 30000
       },
@@ -58,7 +58,7 @@
         "budgetTokens": 8192
       },
       "log": {
-        "path": "/Users/dave/.local/state/auto-model/decisions.jsonl",
+        "path": "~/.local/state/auto-model/decisions.jsonl",
         "captureState": false
       }
     },

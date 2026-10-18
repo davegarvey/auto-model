@@ -2,6 +2,7 @@
 // with enough metadata to compare a rerun on another machine.
 import { execFileSync } from "node:child_process"
 import { mkdir, writeFile } from "node:fs/promises"
+import { homedir } from "node:os"
 import path from "node:path"
 import type { Config } from "../core/config.ts"
 import type { EvaluationResult, RouterSummary } from "./evaluate.ts"
@@ -42,6 +43,22 @@ async function getJSON(url: string): Promise<any> {
   }
 }
 
+/** Rewrites absolute paths in the configuration as repository-relative or home-relative, so results can be published. */
+export function portablePaths<T>(value: T, root: string, home = homedir()): T {
+  const fix = (v: unknown): unknown => {
+    if (typeof v === "string") {
+      if (v === root) return "."
+      if (v.startsWith(root + path.sep)) return path.relative(root, v)
+      if (v.startsWith(home + path.sep)) return "~" + v.slice(home.length)
+      return v
+    }
+    if (Array.isArray(v)) return v.map(fix)
+    if (v && typeof v === "object") return Object.fromEntries(Object.entries(v).map(([k, x]) => [k, fix(x)]))
+    return v
+  }
+  return fix(value) as T
+}
+
 /** Collects versions from git, OpenCode, Ollama and the System One server. Missing pieces are left out. */
 export async function collectMetadata(config: Config, root: string, dataset: RunMetadata["dataset"]): Promise<RunMetadata> {
   const commit = sh("git", ["rev-parse", "--short", "HEAD"], root) ?? "unknown"
@@ -68,7 +85,7 @@ export async function collectMetadata(config: Config, root: string, dataset: Run
     commit,
     datasetRevision: dataCommit + (dirty ? "+dirty" : ""),
     dataset,
-    config,
+    config: portablePaths(config, root),
     versions: {
       node: process.versions.node,
       ...(opencode ? { opencode } : {}),

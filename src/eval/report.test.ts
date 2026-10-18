@@ -7,7 +7,7 @@ import { test } from "node:test"
 import { parseConfig } from "../core/config.ts"
 import type { Router } from "../core/router.ts"
 import { evaluate } from "./evaluate.ts"
-import { writeRun, type RunMetadata } from "./report.ts"
+import { portablePaths, writeRun, type RunMetadata } from "./report.ts"
 
 const config = parseConfig({
   tiers: [
@@ -59,4 +59,13 @@ test("a run writes report.md, report.json and decisions.jsonl with its metadata"
   const md = readFileSync(path.join(dir, "report.md"), "utf8")
   for (const needle of ["abc1234", "def5678", "OpenCode 2.0.30", "e98b54fe1913", "State-size sweep", "threshold", "hysteresis", "95% CI"])
     assert.ok(md.includes(needle), needle)
+})
+
+test("paths in metadata are made repository- or home-relative", () => {
+  const out = portablePaths(
+    { a: "/home/u/repo/data/x.jsonl", b: "/home/u/.local/state/log.jsonl", c: "/etc/other", d: [{ e: "/home/u/repo" }], n: 3 },
+    "/home/u/repo",
+    "/home/u",
+  )
+  assert.deepEqual(out, { a: "data/x.jsonl", b: "~/.local/state/log.jsonl", c: "/etc/other", d: [{ e: "." }], n: 3 })
 })
